@@ -39,5 +39,11 @@ class Command(BaseCommand):
                         )
                     )
 
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Successfully populated database with Entities from {settings.OPENFISCA_API_URL}/entities"
+                )
+            )
+
         except CommandError as error:
             self.stdout.write(self.style.ERROR(f"Error creating Entity: {str(error)}"))
