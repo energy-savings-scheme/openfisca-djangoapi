@@ -1,6 +1,6 @@
 Django==3.1.7               # A high-level Python Web framework that encourages rapid development and clean, pragmatic design.
-django-debug-toolbar==2.0   # A configurable set of panels that display various debug information about the current request/response.
-psycopg2==2.8.3             # Python-PostgreSQL Database Adapter
+django-debug-toolbar==3.2   # A configurable set of panels that display various debug information about the current request/response.
+psycopg2==2.8.6             # Python-PostgreSQL Database Adapter
 jsonfield==3.1.0            # A reusable Django field that allows you to store validated JSON in your model
 uwsgi==2.0.18               # The uWSGI Server
 Jinja2==2.10.1              # A small but fast and easy to use stand-alone template engine written in pure python.
