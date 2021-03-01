@@ -79,13 +79,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    'rest_framework.renderers.BrowsableAPIRenderer',
+    # 'rest_framework.renderers.BrowsableAPIRenderer',
     'rest_framework.renderers.JSONRenderer',
 )
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES,
-    
+
     # Authentication settings
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',

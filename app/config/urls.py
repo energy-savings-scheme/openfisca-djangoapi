@@ -23,7 +23,7 @@ from django.urls import include, path
 admin.site.site_header = 'OpenFisca Django-API Administration'
 
 urlpatterns = [
-    path("/", include(("variables.urls", "variables"), namespace="variables")),
+    path("", include(("variables.urls", "variables"), namespace="variables")),
     url(r'^admin/', admin.site.urls),
 ]
 
