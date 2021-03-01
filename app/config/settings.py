@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Our apps
+    'entities.apps.EntityConfig',
     'variables.apps.VariableConfig',
 ]
 
