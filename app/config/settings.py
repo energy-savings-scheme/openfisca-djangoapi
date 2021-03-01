@@ -172,3 +172,11 @@ IS_WSGI = bool(os.environ.get('IS_WSGI', False))
 # http://stackoverflow.com/questions/26435272/how-to-use-django-sslify-to-force-https-on-my-djangonginxgunicorn-web-app-and
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+
+
+###########################################
+###########################################
+###########################################
+
+# OpenFisca settings
+OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
