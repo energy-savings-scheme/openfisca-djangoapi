@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'debug_toolbar',
+    'rest_framework',
 
     # Our apps
     'variables.apps.VariableConfig',
@@ -75,6 +76,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# REST API Settings
+
+DEFAULT_RENDERER_CLASSES = (
+    'rest_framework.renderers.BrowsableAPIRenderer',
+    'rest_framework.renderers.JSONRenderer',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES,
+    
+    # Authentication settings
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    )
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
