@@ -15,7 +15,7 @@ set -e
 [ -z "$POSTGRES_PASSWORD" ] && echo "ERROR: Need to set POSTGRES_PASSWORD" && exit 1;
 
 # Used by uwsgi.ini file to start the wsgi Django application
-[ -z "$WSGI_MODULE" ] && echo "ERROR: Need to set WSGI_MODULE. E.g.: hello.wsgi:application" && exit 1;
+[ -z "$WSGI_MODULE" ] && echo "ERROR: Need to set WSGI_MODULE. E.g.: config.wsgi:application" && exit 1;
 
 
 # Define help message

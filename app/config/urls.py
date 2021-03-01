@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 # Custom admin header
-admin.site.site_header = 'Hello Administration'
+admin.site.site_header = 'OpenFisca Django-API Administration'
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
