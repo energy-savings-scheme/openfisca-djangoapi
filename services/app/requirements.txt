@@ -5,6 +5,7 @@ jsonfield==3.1.0            # A reusable Django field that allows you to store v
 uwsgi==2.0.18               # The uWSGI Server
 Jinja2==2.10.1              # A small but fast and easy to use stand-alone template engine written in pure python.
 djangorestframework==3.12.2 # Web APIs for Django, made easy
+django-environ==0.4.5       # Django-environ allows you to utilize 12factor inspired environment variables to configure your Django application.
 
 # Linting
 pylint==2.3.1               # python code static checker

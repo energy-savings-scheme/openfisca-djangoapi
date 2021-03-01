@@ -11,10 +11,18 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Load environment variables
+env = environ.Env()
+
+READ_DOT_ENV_FILE = True
+if READ_DOT_ENV_FILE:
+    ENV_ROOT_DIR = environ.Path(__file__) - 3
+    env.read_env(str(ENV_ROOT_DIR.path(".env")))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
