@@ -1,7 +1,7 @@
 #
 # Minimal Docker image for a Django project
 #
-FROM python:3.7.4-alpine3.10
+FROM python:3.9.2-alpine3.13
 
 # Ensure that Python outputs everything that's printed inside
 # the application rather than buffering it.
