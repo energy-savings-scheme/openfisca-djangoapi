@@ -2,6 +2,58 @@
 
 A database and Django webserver layer for serving OpenFisca rulesets
 
+
+## Install and run locally (developers)
+
+Clone this repo:
+```
+$ git clone git@github.com:RamParameswaran/openfisca-djangoapi.git
+$ cd openfisca-djangoapi
+```
+
+Create virtual environment (python 3.7) and install requirements
+```
+# We're using `virtualenvwrapper` to create the virtual env here, but you can use any other virtual env tool...
+# NOTE - make sure Python 3.7 is installed on your machine!
+
+$ mkvirtualenv openfisca-django --python=python3.7
+$ pip install -r services/app/requirements.txt
+```
+
+Run the Django server locally
+```
+# First try running the Django server locally
+$ python app/manage.py runserver
+
+# The webserver should return:
+
+System check identified no issues (0 silenced).
+
+    You have 18 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+    Run 'python manage.py migrate' to apply them.
+    March 01, 2021 - 03:29:31
+    Django version 3.1.7, using settings 'config.settings'
+    Starting development server at http://127.0.0.1:8000/
+    Quit the server with CONTROL-C.
+
+# Next run a database migration and create an admin user
+$ python app/manage.py migrate
+$ python app/manage.py createsuperuser
+# Enter usename and password
+
+# Launch the webserver locally
+$ python app/manage.py runserver
+```
+
+Log into the admin backend
+```
+# On your browser naviate to http://localhost:8000/admin/
+# Enter the superuser username and password that your just created
+
+et voila!
+```
+
+
 ## Docker
 
 Init project:
