@@ -46,7 +46,7 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             # Second - iterate through all variables in variables_list
-            for variable in variables_list[0:10]:
+            for variable in variables_list:
                 # Only fetch details if the Variable is newly added to the DB
                 # if variable.get("created"):
                 if True:
@@ -59,6 +59,7 @@ class Command(BaseCommand):
                     obj.default_value = str(data.get("defaultValue"))
                     obj.possible_values = data.get("possibleValues")
 
+                    # Link this Variable object to an Entity object according to the entity `name` attribute
                     try:
                         entity = Entity.objects.get(name=data.get("entity"))
                         obj.entity = entity
@@ -68,6 +69,19 @@ class Command(BaseCommand):
                                 f"Entity '{data.get('entity')}' does not exist in database yet. Try running `python manage.py fetch_entities` first. If this doesn't fix the problem, there may be an error with the OpenFisca application"
                             )
                         )
+
+                    formulas = data.get("formulas")
+                    if formulas:
+                        dates = list(formulas.keys())
+                        latest_formula = formulas[dates[0]]
+                        content = latest_formula.get("content", "")
+
+                        for variable_obj in Variable.objects.all():
+                            variable_name = variable_obj.name
+                            if (content.find(f'"{variable_name}"') > 0) or (
+                                content.find(f"'{variable_name}'") > 0
+                            ):
+                                obj.dependencies.add(variable_obj)
 
                     obj.save()
                     # Write to terminal to show progress
