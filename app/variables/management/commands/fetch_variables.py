@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from entities.models import Entity
-from variables.models import Variable
+from variables.models import FormulaVariable, Variable
 
 
 class Command(BaseCommand):
@@ -81,7 +81,9 @@ class Command(BaseCommand):
                             if (content.find(f'"{variable_name}"') > 0) or (
                                 content.find(f"'{variable_name}'") > 0
                             ):
-                                obj.dependencies.add(variable_obj)
+                                FormulaVariable.objects.get_or_create(
+                                    parent=obj, child=variable_obj
+                                )
 
                     obj.save()
                     # Write to terminal to show progress
