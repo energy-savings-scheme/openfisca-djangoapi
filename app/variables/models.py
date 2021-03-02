@@ -68,3 +68,9 @@ class Variable(models.Model):
     )
     possibleValues = JSONField(null=True, blank=True)
     metadata = JSONField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<Variable: {str(self)}>"
