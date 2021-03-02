@@ -69,14 +69,32 @@ class Variable(models.Model):
     possible_values = JSONField(null=True, blank=True)
     metadata = JSONField(null=True, blank=True)
 
-    dependencies = models.ManyToManyField(
-        "self",
-        blank=True,
-        help_text="What other variables is this variable dependent upon? Found using the formula as returned by the OpenFisca API.",
-    )
-
     def __str__(self):
         return self.name
 
     def __repr__(self):
         return f"<Variable: {str(self)}>"
+
+    @property
+    def get_children(self):
+        children_links = FormulaVariable.objects.filter(parent=self)
+        children = Variable.objects.filter(children__in=children_links)
+
+        return children
+
+
+class FormulaVariable(models.Model):
+    parent = models.ForeignKey(
+        "variables.Variable",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="is_parent",
+    )
+    child = models.ForeignKey(
+        "variables.Variable",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children",
+    )
