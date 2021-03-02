@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from config.pagination import LargeResultsSetPagination
-from variables.models import Variable
-from variables.serializers import VariableListSerializer, VariableDetailSerializer
+from variables.models import FormulaVariable, Variable
+from variables.serializers import VariableListSerializer, VariableChildrenSerializer
 
 
 class VariablesList(generics.ListAPIView):
@@ -17,6 +17,13 @@ class VariablesList(generics.ListAPIView):
 
 class VariableDetail(generics.RetrieveAPIView):
     queryset = Variable.objects.all()
-    serializer_class = VariableDetailSerializer
+    serializer_class = VariableListSerializer
+    lookup_field = "name"
+    lookup_url_kwarg = "variable_name"
+
+
+class VariableChildrenList(generics.RetrieveAPIView):
+    queryset = Variable.objects.all()
+    serializer_class = VariableChildrenSerializer
     lookup_field = "name"
     lookup_url_kwarg = "variable_name"
