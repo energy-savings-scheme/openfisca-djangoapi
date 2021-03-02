@@ -69,6 +69,12 @@ class Variable(models.Model):
     possible_values = JSONField(null=True, blank=True)
     metadata = JSONField(null=True, blank=True)
 
+    dependencies = models.ManyToManyField(
+        "self",
+        blank=True,
+        help_text="What other variables is this variable dependent upon? Found using the formula as returned by the OpenFisca API.",
+    )
+
     def __str__(self):
         return self.name
 
