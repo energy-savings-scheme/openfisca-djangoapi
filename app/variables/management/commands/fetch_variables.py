@@ -24,17 +24,18 @@ class Command(BaseCommand):
                 _new_item["name"] = name
                 variables_list.append(_new_item)
 
-            variables_list = variables_list[10:40]  # for testing only
-
             num_created = 0
             num_already_exists = 0
 
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
-                variable, created = Variable.objects.get_or_create(
-                    name=variable["name"]
-                )
+                obj, created = Variable.objects.get_or_create(name=variable["name"])
+
+                # Write to terminal to show progress
+                self.stdout.ending = ""
+                self.stdout.write(self.style.SUCCESS("."))
+                self.stdout.ending = "\n"
 
                 # For logging purposes, we keep track of how many (new) variables were created in the DB
                 # and how many already existed in the DB
@@ -45,9 +46,10 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             # Second - iterate through all variables in variables_list
-            for variable in variables_list:
+            for variable in variables_list[0:10]:
                 # Only fetch details if the Variable is newly added to the DB
-                if variable.get("created"):
+                # if variable.get("created"):
+                if True:
                     obj = Variable.objects.get(name=variable["name"])
                     data = requests.get(variable["href"]).json()
 
@@ -68,10 +70,14 @@ class Command(BaseCommand):
                         )
 
                     obj.save()
+                    # Write to terminal to show progress
+                    self.stdout.ending = ""
+                    self.stdout.write(self.style.SUCCESS("."))
+                    self.stdout.ending = "\n"
 
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Successfully populated database with Variables from {settings.OPENFISCA_API_URL}/variables.\n    {num_created} variables added to DB.\n    {num_already_exists} variables already existed in DB"
+                    f"\nSuccessfully populated database with Variables from {settings.OPENFISCA_API_URL}/variables.\n    {num_created} variables added to DB.\n    {num_already_exists} variables already existed in DB"
                 )
             )
 
