@@ -6,6 +6,8 @@ from variables.models import FormulaVariable, Variable
 
 class VariableListSerializer(serializers.ModelSerializer):
     entity = serializers.StringRelatedField()
+    children = serializers.StringRelatedField(source="get_children", many=True)
+    parents = serializers.StringRelatedField(source="get_parents", many=True)
 
     class Meta:
         model = Variable
@@ -18,6 +20,8 @@ class VariableListSerializer(serializers.ModelSerializer):
             "default_value",
             "possible_values",
             "metadata",
+            "children",
+            "parents",
         ]
         depth = 0
 

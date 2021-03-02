@@ -82,6 +82,13 @@ class Variable(models.Model):
 
         return children
 
+    @property
+    def get_parents(self):
+        parents_links = FormulaVariable.objects.filter(child=self)
+        parents = Variable.objects.filter(is_parent__in=parents_links)
+
+        return parents
+
 
 class FormulaVariable(models.Model):
     parent = models.ForeignKey(
