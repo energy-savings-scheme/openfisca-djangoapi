@@ -66,7 +66,7 @@ class Variable(models.Model):
         blank=True,
         help_text="Default value of the variable.",
     )
-    possibleValues = JSONField(null=True, blank=True)
+    possible_values = JSONField(null=True, blank=True)
     metadata = JSONField(null=True, blank=True)
 
     def __str__(self):
