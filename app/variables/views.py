@@ -12,7 +12,7 @@ from variables.serializers import VariableListSerializer, VariableChildrenSerial
 class VariablesList(generics.ListAPIView):
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
-    pagination_class = LargeResultsSetPagination
+    # pagination_class = LargeResultsSetPagination
 
 
 class VariableDetail(generics.RetrieveAPIView):
