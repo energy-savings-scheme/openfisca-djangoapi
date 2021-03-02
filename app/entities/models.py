@@ -15,7 +15,7 @@ class Entity(models.Model):
     """
 
     name = models.CharField(
-        max_length=255, null=False, blank=False, help_text="Entity name"
+        max_length=255, null=False, blank=False, help_text="Entity name", unique=True
     )
     description = models.CharField(
         max_length=255, null=True, blank=True, help_text="Human-readable description"
