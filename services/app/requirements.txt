@@ -3,6 +3,7 @@ Django==3.1.7               # A high-level Python Web framework that encourages 
 django-debug-toolbar==3.2   # A configurable set of panels that display various debug information about the current request/response.
 django-environ==0.4.5       # Django-environ allows you to utilize 12factor inspired environment variables to configure your Django application.
 djangorestframework==3.12.2 # Web APIs for Django, made easy
+djangorestframework-recursive==0.1.2    # Recursive Serialization for Django REST framework
 Jinja2==2.10.1              # A small but fast and easy to use stand-alone template engine written in pure python.
 jsonfield==3.1.0            # A reusable Django field that allows you to store validated JSON in your model
 psycopg2==2.8.6             # Python-PostgreSQL Database Adapter
