@@ -1,7 +1,8 @@
 from django.urls import path, re_path, include
 
-from variables.views import ExampleView
+from variables.views import VariablesList, VariableDetail
 
 urlpatterns = [
-    path('example_abc/', ExampleView.as_view()),
+    path("/", VariablesList.as_view()),
+    path("/<str:variable_name>/", VariableDetail.as_view()),
 ]

@@ -20,22 +20,24 @@ from django.contrib import admin
 from django.urls import include, path
 
 # Custom admin header
-admin.site.site_header = 'OpenFisca Django-API Administration'
+admin.site.site_header = "OpenFisca Django-API Administration"
 
 urlpatterns = [
-    path("", include(("variables.urls", "variables"), namespace="variables")),
-    url(r'^admin/', admin.site.urls),
+    path("variables", include(("variables.urls", "variables"), namespace="variables")),
+    url(r"^admin/", admin.site.urls),
 ]
 
 # Host the static from uWSGI
 if settings.IS_WSGI:
     print("uWSGI mode, adding static file patterns")
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
     urlpatterns += staticfiles_urlpatterns()
 
 # Add debug toolbar
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
+        path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
