@@ -1,11 +1,16 @@
 from django.contrib import admin
 
-from variables.models import Variable
+from variables.models import FormulaVariable, Variable
+
+
+class FormulaVariableInline(admin.TabularInline):
+    model = FormulaVariable
+    fk_name = "parent"
 
 
 class VariableAdmin(admin.ModelAdmin):
     list_display = ["name", "description", "value_type", "definition_period"]
-    filter_horizontal = ("dependencies",)
+    inlines = (FormulaVariableInline,)
     list_filter = ("entity",)
     search_fields = ("name",)
 
