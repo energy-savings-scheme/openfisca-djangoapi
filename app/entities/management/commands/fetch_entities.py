@@ -10,15 +10,19 @@ class Command(BaseCommand):
     help = "Fetches entities from OpenFisca API"
 
     def handle(self, *args, **options):
-
         try:
-            # Get entities from API
-            entities_data = requests.get(
-                f"{settings.OPENFISCA_API_URL}/entities"
-            ).json()
+            # Get variables from API
+            entities_data = requests.get(f"{settings.OPENFISCA_API_URL}/entities")
+            data = entities_data.json()
+
+            # Check that the OpenFisca API returned a 200 response. If not, raise Exception
+            if entities_data.status_code != 200:
+                raise CommandError(
+                    f"""[HTTPError]: the OpenFisca API returned a <{entities_data.status_code}> response. Expected <200> response.\nCheck that the specified OpenFisca API ({settings.OPENFISCA_API_URL}) is online."""
+                )
 
             # Iterate through entities
-            for name in entities_data.keys():
+            for name in data.keys():
                 json = entities_data[name]
                 description = json.get("description")
                 plural = json.get("plural")
