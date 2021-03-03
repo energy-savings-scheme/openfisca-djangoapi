@@ -1,11 +1,44 @@
 openapi: 3.0.3
 info:
-  title: ''
+  title: OpenFisca-DjangoAPI Documentation
   version: 0.0.0
+  description: A database and Django webserver layer for serving OpenFisca rulesets.
+  contact:
+    name: NSW Government - Department of Industry Planning and Environment
+    url: https://github.com/energy-savings-scheme
+  license:
+    name: Licensed under the MIT License
+    url: https://github.com/RamParameswaran/openfisca-djangoapi/blob/main/LICENSE
 paths:
-  /api/schema/:
+  /entities/:
     get:
-      operationId: api_schema_retrieve
+      operationId: entities_list
+      description: |-
+        ## LIST all Entities stored in the database
+
+        ### Returns
+        - array of Entity objects (JSON)
+
+        ### Query params
+        - None
+      tags:
+      - entities
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EntityList'
+          description: ''
+  /schema/:
+    get:
+      operationId: schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -121,7 +154,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - api
+      - schema
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -149,7 +182,18 @@ paths:
   /variables/:
     get:
       operationId: variables_list
-      description: ''
+      description: |-
+        ## LIST all Variables stored in the database
+
+        ### Returns
+        - array of Variable objects (JSON)
+
+        ### Query params (optional)
+        This endpoint accept the following query params:
+        - search [str]: e.g "/variables?search=abc"
+        - is_final [bool]: e.g. "/variables?is_final=true"
+
+        Multiple queries can be combined with "&" (for example: "/variables?search=abc&is_final=true")
       tags:
       - variables
       security:
@@ -168,7 +212,16 @@ paths:
   /variables/{variable_name}/:
     get:
       operationId: variables_retrieve
-      description: ''
+      description: |-
+        ## GET details of a single Variable
+
+        ### Returns
+        - a Variable object (JSON)
+        - or a 404 error if the specified Variable could not be found
+
+        ### URL parameter (required)
+        The following url parameter must be specified
+        - variable_name [str]: e.g. "/variables/<variable_name>/
       parameters:
       - in: path
         name: variable_name
@@ -191,7 +244,25 @@ paths:
   /variables/{variable_name}/children/:
     get:
       operationId: variables_children_retrieve
-      description: ''
+      description: |-
+        ## GET dependency tree of a single Variable
+
+        ### Returns
+        - a tree structure (in JSON format) recursively listing each child of the specified Variable, and each of <em>that variable's</em> children, etc.
+        - or a 404 error if the specified Variable could not be found
+        - the structrue of the tree is:
+            ```python
+            {  name: "abc",
+                children: [
+                            {name: "def" , children: [ ... ]},
+                            {name: "ghi" , children: [ ... ]},
+                          ]
+            }
+            ```
+
+        ### URL parameter (required)
+        The following url parameter must be specified
+        - variable_name [str]: e.g. "/variables/<variable_name>/children/
       parameters:
       - in: path
         name: variable_name
@@ -222,6 +293,34 @@ components:
       - YEAR
       - ETERNITY
       type: string
+    EntityList:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Entity name
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: Human-readable description
+          maxLength: 255
+        plural:
+          type: string
+          nullable: true
+          description: Human-readable plural name
+          maxLength: 255
+        documentation:
+          type: string
+          nullable: true
+          description: Documentation
+          maxLength: 255
+        is_person:
+          type: boolean
+          description: Specifies whether the entity is a single entity (`Person`)
+            or a group entity
+      required:
+      - name
     NullEnum:
       enum:
       - null

@@ -29,6 +29,7 @@ from drf_spectacular.views import (
 admin.site.site_header = "OpenFisca Django-API Administration"
 
 urlpatterns = [
+    path("entities/", include(("entities.urls", "entities"), namespace="entities")),
     path("variables/", include(("variables.urls", "variables"), namespace="variables")),
     url(r"^admin/", admin.site.urls),
     # SWAGGER PATHS
