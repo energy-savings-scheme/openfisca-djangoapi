@@ -1,6 +1,7 @@
 from django.urls import path, re_path, include
 
-from variables.views import ExampleView
+from entities.views import EntitiesList
 
 urlpatterns = [
+    path("", EntitiesList.as_view()),
 ]
