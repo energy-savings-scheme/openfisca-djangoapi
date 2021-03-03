@@ -12,11 +12,20 @@ class Command(BaseCommand):
     help = "Runs all fetch commands in the correct order: Entities, Variables, (Parameters - TODO)"
 
     def handle(self, *args, **options):
-        self.stdout.write(
-            self.style.WARNING(
-                f"\nIngesting OpenFisca data from: {settings.OPENFISCA_API_URL}"
-            )
-        )
+        try:
+            if not settings.OPENFISCA_API_URL:
+                raise CommandError(
+                    "Environment variable `OPENFISCA_API_URL` not found. `OPENFISCA_API_URL` should be specified in a '.env' file in the project root directory."
+                )
 
-        call_command("fetch_entities")
-        call_command("fetch_variables")
+            self.stdout.write(
+                self.style.WARNING(
+                    f"\nIngesting OpenFisca data from: {settings.OPENFISCA_API_URL}"
+                )
+            )
+
+            call_command("fetch_entities")
+            call_command("fetch_variables")
+
+        except CommandError as error:
+            self.stdout.write(self.style.ERROR(str(error)))
