@@ -2,16 +2,17 @@
 
 A database and Django webserver layer for serving OpenFisca rulesets
 
-
 ## Install and run locally (developers)
 
 Clone this repo:
+
 ```
 $ git clone git@github.com:RamParameswaran/openfisca-djangoapi.git
 $ cd openfisca-djangoapi
 ```
 
 Create virtual environment (python 3.7) and install requirements
+
 ```
 # We're using `virtualenvwrapper` to create the virtual env here, but you can use any other virtual env tool...
 # NOTE - make sure Python 3.7 is installed on your machine!
@@ -21,6 +22,7 @@ $ pip install -r services/app/requirements.txt
 ```
 
 Run the Django server locally
+
 ```
 # First try running the Django server locally
 $ python app/manage.py runserver
@@ -45,14 +47,27 @@ $ python app/manage.py createsuperuser
 $ python app/manage.py runserver
 ```
 
+Ingest an OpenFisca ruleset into the database
+
+```
+# By default the database will be empty.
+# To ingest data from an OpenFisca API:
+# 1) Make sure you've set the `OPENFISCA_API_URL` environment variable in a .env file in the project root directory
+# e.g. OPENFISCA_API_URL=https://dpie-ess-dev.herokuapp.com
+
+# 2) run the Django `fetch_all` command
+$ python app/manage.py fetch_all
+
+```
+
 Log into the admin backend
+
 ```
 # On your browser naviate to http://localhost:8000/admin/
 # Enter the superuser username and password that your just created
 
 et voila!
 ```
-
 
 ## Docker
 
