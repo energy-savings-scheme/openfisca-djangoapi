@@ -50,9 +50,10 @@ $ python app/manage.py runserver
 Ingest an OpenFisca ruleset into the database
 
 ```
-# By default the database will be empty.
-# To ingest data from an OpenFisca API:
-# 1) Make sure you've set the `OPENFISCA_API_URL` environment variable in a .env file in the project root directory
+# By default the database will be empty. To ingest data from an OpenFisca API:
+
+# 1) Make sure you've set the `OPENFISCA_API_URL` environment variable in 
+# a .env file in the project root directory
 # e.g. OPENFISCA_API_URL=https://dpie-ess-dev.herokuapp.com
 
 # 2) run the Django `fetch_all` command
@@ -63,6 +64,9 @@ $ python app/manage.py fetch_all
 Log into the admin backend
 
 ```
+# Launch the webserver locally
+$ python app/manage.py runserver
+
 # On your browser naviate to http://localhost:8000/admin/
 # Enter the superuser username and password that your just created
 
