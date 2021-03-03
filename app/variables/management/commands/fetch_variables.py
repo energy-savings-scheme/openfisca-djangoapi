@@ -30,11 +30,12 @@ async def fetch(url, session, django_command):
     """
     async with session.get(url) as response:
         resp = await response.json()
-        status = response.status
 
+        # Check that the OpenFisca API returned a 200 response. If not, raise Exception
+        status = response.status
         if status != 200:
             raise CommandError(
-                f"[HTTPError]: the OpenFisca API returned a <{status}> response. Expected <200> response..."
+                f"""[HTTPError]: the OpenFisca API returned a <{status}> response. Expected <200> response.\nCheck that the specified OpenFisca API ({settings.OPENFISCA_API_URL}) is online."""
             )
 
         django_command.stdout.ending = ""
@@ -99,8 +100,15 @@ class Command(BaseCommand):
                 )
             )
 
-            # Get entities from API
-            data = requests.get(f"{settings.OPENFISCA_API_URL}/variables").json()
+            # Get variables from API
+            variables_data = requests.get(f"{settings.OPENFISCA_API_URL}/variables")
+            data = variables_data.json()
+
+            # Check that the OpenFisca API returned a 200 response. If not, raise Exception
+            if variables_data.status_code != 200:
+                raise CommandError(
+                    f"""[HTTPError]: the OpenFisca API returned a <{variables_data.status_code}> response. Expected <200> response.\nCheck that the specified OpenFisca API ({settings.OPENFISCA_API_URL}) is online."""
+                )
 
             # Create shallow** list of variables
             ## ** `shallow` means that the list only stores the variable name and URL for details
