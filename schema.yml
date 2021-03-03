@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /variables/:
+    get:
+      operationId: variables_list
+      description: ''
+      tags:
+      - variables
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VariableList'
+          description: ''
+  /variables/{variable_name}/:
+    get:
+      operationId: variables_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: variable_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - variables
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableList'
+          description: ''
+  /variables/{variable_name}/children/:
+    get:
+      operationId: variables_children_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: variable_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - variables
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableChildren'
+          description: ''
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    DefinitionPeriodEnum:
+      enum:
+      - MONTH
+      - YEAR
+      - ETERNITY
+      type: string
+    NullEnum:
+      enum:
+      - null
+    ValueTypeEnum:
+      enum:
+      - Int
+      - Float
+      - Boolean
+      - String
+      - Date
+      - Enum
+      type: string
+    VariableChildren:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Variable name
+          maxLength: 255
+        children:
+          type: string
+      required:
+      - children
+      - name
+    VariableList:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Variable name
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: Human-readable description
+          maxLength: 255
+        value_type:
+          nullable: true
+          description: The value type of the variable
+          oneOf:
+          - $ref: '#/components/schemas/ValueTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        entity:
+          type: string
+          readOnly: true
+        definition_period:
+          nullable: true
+          description: Period the variable is defined for
+          oneOf:
+          - $ref: '#/components/schemas/DefinitionPeriodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        default_value:
+          type: string
+          nullable: true
+          description: Default value of the variable.
+          maxLength: 255
+        possible_values:
+          type: string
+          nullable: true
+        metadata:
+          type: string
+          nullable: true
+        children:
+          type: array
+          items:
+            type: string
+        parents:
+          type: array
+          items:
+            type: string
+      required:
+      - children
+      - entity
+      - name
+      - parents
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: Session

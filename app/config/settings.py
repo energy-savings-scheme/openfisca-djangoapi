@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "debug_toolbar",
     "rest_framework",
+    "drf_spectacular",
     # Our apps
     "entities.apps.EntityConfig",
     "variables.apps.VariableConfig",
@@ -95,6 +96,8 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
     # Authentication settings
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    # Swagger Documentation
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Database
@@ -170,6 +173,21 @@ IS_WSGI = bool(os.environ.get("IS_WSGI", False))
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 
+
+# Spectacular Swagger documentation settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "OpenFisca-DjangoAPI Documentation",
+    "DESCRIPTION": "A database and Django webserver layer for serving OpenFisca rulesets.",
+    "TOS": None,
+    "CONTACT": {
+        "name": "NSW Government - Department of Industry Planning and Environment",
+        "url": "https://github.com/energy-savings-scheme",
+    },
+    "LICENSE": {
+        "name": "Licensed under the MIT License",
+        "url": "https://github.com/RamParameswaran/openfisca-djangoapi/blob/main/LICENSE",
+    },
+}
 
 ###########################################
 ###########################################
