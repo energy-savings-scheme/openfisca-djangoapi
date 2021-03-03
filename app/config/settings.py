@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    "django_filters",
     "rest_framework",
     # Our apps
     "entities.apps.EntityConfig",
@@ -87,12 +88,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    # "rest_framework.renderers.BrowsableAPIRenderer",
+    "rest_framework.renderers.BrowsableAPIRenderer",
     "rest_framework.renderers.JSONRenderer",
 )
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
+    # filter backend
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     # Authentication settings
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
@@ -176,4 +179,5 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 ###########################################
 
 # OpenFisca settings
-OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
+OPENFISCA_API_URL = env.str(
+    "OPENFISCA_API_URL", default="http://localhost:8001")

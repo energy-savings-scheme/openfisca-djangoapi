@@ -99,3 +99,6 @@ pgdata
 # Sqlite Data
 db.sqlite3
 *.sqlite3
+
+#vscode
+.vscode/
