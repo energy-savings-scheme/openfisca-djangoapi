@@ -19,22 +19,39 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+
 # Custom admin header
-admin.site.site_header = 'OpenFisca Django-API Administration'
+admin.site.site_header = "OpenFisca Django-API Administration"
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    path("entities/", include(("entities.urls", "entities"), namespace="entities")),
+    path("variables/", include(("variables.urls", "variables"), namespace="variables")),
+    url(r"^admin/", admin.site.urls),
+    # SWAGGER PATHS
+    path(
+        "",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
 ]
 
 # Host the static from uWSGI
 if settings.IS_WSGI:
     print("uWSGI mode, adding static file patterns")
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
     urlpatterns += staticfiles_urlpatterns()
 
 # Add debug toolbar
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
+        path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
