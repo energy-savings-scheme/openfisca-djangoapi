@@ -1,3 +1,14 @@
+""" Developer note
+    - This module defines the Django command `fetch_variables` which is run in terminal by: `python manage.py fetch_variables`.
+      This command is defined in the `Command.handle()` method
+    - In practice, this method calls the OpenFisca API to get the details of each variable. This could be hundreds or thousands
+      of requests.
+    - We perform these requests asynchronously to improve the speed of the operation. The improvement is about 50x
+    - The three `async` functions ("fetch", "bound_fetch", and "run") define this async workflow
+"""
+
+import asyncio
+from aiohttp import ClientSession
 import requests
 
 from django.conf import settings
@@ -7,14 +18,97 @@ from entities.models import Entity
 from variables.models import FormulaVariable, Variable
 
 
+async def fetch(url, session, django_command):
+    """Asynchronous function which retrieves the response.json() object
+    from each GET request.
+
+    :params:
+    - url: ... boilerplate; see `aiohttp` docs for detailed explanation...
+    - session: ... boilerplate; see `aiohttp` docs for detailed explanation...
+    - django_command: Django Command instance to be used to write to `stdout` to show a progress indicator...
+
+    """
+    async with session.get(url) as response:
+        resp = await response.json()
+
+        # Check that the OpenFisca API returned a 200 response. If not, raise Exception
+        status = response.status
+        if status != 200:
+            raise CommandError(
+                f"""[HTTPError]: the OpenFisca API returned a <{status}> response. Expected <200> response.\nCheck that the specified OpenFisca API ({settings.OPENFISCA_API_URL}) is online."""
+            )
+
+        django_command.stdout.ending = ""
+        django_command.stdout.write(django_command.style.SUCCESS("."))
+        django_command.stdout.ending = "\n"
+
+        return resp
+
+
+async def bound_fetch(sem, url, session, django_command):
+    """Asynchronous function which adds each async request to the task loop.
+    We use asyncio.Semaphore to rate limit the queries, because we would likely crash
+    the OpenFisca API server if we made 1000 requests all at once...
+
+    :params:
+    - sem: ... boilerplate; see `aiohttp` docs for detailed explanation...
+    - url: ... boilerplate; see `aiohttp` docs for detailed explanation...
+    - session: ... boilerplate; see `aiohttp` docs for detailed explanation...
+    - django_command: Django Command instance to be used in the `fetch` method.
+
+    """
+    # Getter function with semaphore.
+    async with sem:
+        return await fetch(url, session, django_command)
+
+
+async def run(variables_list, django_command):
+    """Asynchronous function which creates a reusable async ClientSession and instantiates
+    asyncio.Semaphore.
+
+    :params:
+    - variables_list [array of dicts]: passed from the Django Command instance.
+    - django_command: Django Command instance to be used in the `fetch` method.
+
+    """
+    tasks = []
+    # create instance of Semaphore
+    sem = asyncio.Semaphore(20)
+
+    # Create client session that will ensure we dont open new connection per each request.
+    async with ClientSession() as session:
+        for variable in variables_list:
+            # pass Semaphore and session to every GET request
+            task = asyncio.ensure_future(
+                bound_fetch(sem, variable["href"], session, django_command)
+            )
+            tasks.append(task)
+
+        responses = asyncio.gather(*tasks)
+        return await responses
+
+
 class Command(BaseCommand):
-    help = "Fetches variables from OpenFisca API"
+    help = "Asynchronously fetches variables from OpenFisca API."
 
     def handle(self, *args, **options):
-
         try:
-            # Get entities from API
-            data = requests.get(f"{settings.OPENFISCA_API_URL}/variables").json()
+            self.stdout.ending = ""
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "\n##### Running `fetch_variables` ###############\n"
+                )
+            )
+
+            # Get variables from API
+            variables_data = requests.get(f"{settings.OPENFISCA_API_URL}/variables")
+            data = variables_data.json()
+
+            # Check that the OpenFisca API returned a 200 response. If not, raise Exception
+            if variables_data.status_code != 200:
+                raise CommandError(
+                    f"""[HTTPError]: the OpenFisca API returned a <{variables_data.status_code}> response. Expected <200> response.\nCheck that the specified OpenFisca API ({settings.OPENFISCA_API_URL}) is online."""
+                )
 
             # Create shallow** list of variables
             ## ** `shallow` means that the list only stores the variable name and URL for details
@@ -27,15 +121,15 @@ class Command(BaseCommand):
             num_created = 0
             num_already_exists = 0
 
+            self.stdout.write(self.style.SUCCESS("Adding Variables to database "))
+
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
                 obj, created = Variable.objects.get_or_create(name=variable["name"])
 
                 # Write to terminal to show progress
-                self.stdout.ending = ""
                 self.stdout.write(self.style.SUCCESS("."))
-                self.stdout.ending = "\n"
 
                 # For logging purposes, we keep track of how many (new) variables were created in the DB
                 # and how many already existed in the DB
@@ -45,57 +139,59 @@ class Command(BaseCommand):
                 else:
                     num_already_exists += 1
 
-            # Second - iterate through all variables in variables_list
-            for variable in variables_list:
-                # Only fetch details if the Variable is newly added to the DB
-                # if variable.get("created"):
-                if True:
-                    obj = Variable.objects.get(name=variable["name"])
-                    data = requests.get(variable["href"]).json()
+            self.stdout.write(
+                self.style.SUCCESS("\nFetching Variable details from OpenFisca API ")
+            )
 
-                    obj.description = data.get("description")
-                    obj.value_type = data.get("valueType")
-                    obj.definition_period = data.get("definitionPeriod")
-                    obj.default_value = str(data.get("defaultValue"))
-                    obj.possible_values = data.get("possibleValues")
+            future = asyncio.ensure_future(run(variables_list, self))
+            result = asyncio.get_event_loop().run_until_complete(future)
 
-                    # Link this Variable object to an Entity object according to the entity `name` attribute
-                    try:
-                        entity = Entity.objects.get(name=data.get("entity"))
-                        obj.entity = entity
-                    except Entity.DoesNotExist:
-                        self.stdout.write(
-                            self.style.ERROR(
-                                f"Entity '{data.get('entity')}' does not exist in database yet. Try running `python manage.py fetch_entities` first. If this doesn't fix the problem, there may be an error with the OpenFisca application"
-                            )
+            for data in result:
+                # Get Variable object from database
+                obj = Variable.objects.get(name=data["id"])
+
+                # Update data as per response from OpenFisca API
+                obj.description = data.get("description")
+                obj.value_type = data.get("valueType")
+                obj.definition_period = data.get("definitionPeriod")
+                obj.default_value = str(data.get("defaultValue"))
+                obj.possible_values = data.get("possibleValues")
+
+                # Link this Variable object to an Entity object according to the entity `name` attribute
+                try:
+                    entity = Entity.objects.get(name=data.get("entity"))
+                    obj.entity = entity
+                except Entity.DoesNotExist:
+                    self.stdout.write(
+                        self.style.ERROR(
+                            f"Entity '{data.get('entity')}' does not exist in database yet. Try running `python manage.py fetch_entities` first. If this doesn't fix the problem, there may be an error with the OpenFisca application"
                         )
+                    )
 
-                    formulas = data.get("formulas")
-                    if formulas:
-                        dates = list(formulas.keys())
-                        latest_formula = formulas[dates[0]]
-                        content = latest_formula.get("content", "")
+                formulas = data.get("formulas")
+                if formulas:
+                    dates = list(formulas.keys())
+                    latest_formula = formulas[dates[0]]
+                    content = latest_formula.get("content", "")
 
-                        for variable_obj in Variable.objects.all():
-                            variable_name = variable_obj.name
-                            if (content.find(f'"{variable_name}"') > 0) or (
-                                content.find(f"'{variable_name}'") > 0
-                            ):
-                                FormulaVariable.objects.get_or_create(
-                                    parent=obj, child=variable_obj
-                                )
+                    for variable_obj in Variable.objects.all():
+                        variable_name = variable_obj.name
+                        if (content.find(f'"{variable_name}"') > 0) or (
+                            content.find(f"'{variable_name}'") > 0
+                        ):
+                            FormulaVariable.objects.get_or_create(
+                                parent=obj, child=variable_obj
+                            )
 
-                    obj.save()
-                    # Write to terminal to show progress
-                    self.stdout.ending = ""
-                    self.stdout.write(self.style.SUCCESS("."))
-                    self.stdout.ending = "\n"
+                obj.save()
 
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"\nSuccessfully populated database with Variables from {settings.OPENFISCA_API_URL}/variables.\n    {num_created} variables added to DB.\n    {num_already_exists} variables already existed in DB"
+                    f"\nSuccessfully updated database for {len(result)} variables!\n"
                 )
             )
 
         except CommandError as error:
-            self.stdout.write(self.style.ERROR(f"Error creating Entity: {str(error)}"))
+            self.stdout.write(
+                self.style.ERROR(f"\nError creating Variable: {str(error)}")
+            )

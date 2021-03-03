@@ -203,4 +203,4 @@ Who should use this?
 ###########################################
 
 # OpenFisca settings
-OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
+OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default=None)
