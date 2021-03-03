@@ -140,14 +140,6 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"\nSuccessfully added {num_created} Variables to database from {settings.OPENFISCA_API_URL}/variables. {num_already_exists} variables already existed in DB."
-                )
-            )
-
-            # start = datetime.datetime.now()
-
-            self.stdout.write(
                 self.style.SUCCESS("\nFetching Variable details from OpenFisca API ")
             )
 

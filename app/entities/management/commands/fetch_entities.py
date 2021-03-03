@@ -43,12 +43,18 @@ class Command(BaseCommand):
 
                 entity, created = Entity.objects.get_or_create(
                     name=name,
-                    description=description,
-                    plural=plural,
-                    documentation=documentation,
-                    is_person=is_person,
+                    defaults={
+                        "description": description,
+                        "plural": plural,
+                        "documentation": documentation,
+                        "is_person": is_person,
+                    },
                 )
-                if not created:
+                if created:
+                    self.stdout.write(
+                        self.style.SUCCESS(f"\n{entity.__repr__()} added to database.")
+                    )
+                else:
                     self.stdout.write(
                         self.style.WARNING(
                             f"\n{entity.__repr__()} already exists in database. No action taken..."
