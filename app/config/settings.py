@@ -177,7 +177,16 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 # Spectacular Swagger documentation settings
 SPECTACULAR_SETTINGS = {
     "TITLE": "OpenFisca-DjangoAPI Documentation",
-    "DESCRIPTION": "A database and Django webserver layer for serving OpenFisca rulesets.",
+    "DESCRIPTION": """A database and Django webserver layer for serving OpenFisca rulesets.\n 
+What does it do?
+- ingests a OpenFisca ruleset into a SQL database, allowing for efficient/complex queries
+- provides useful Restful endpoints for frontend services to query ruleset relations
+
+Who should use this?
+- teams who want to interrogate the <em>realtionship</em> between Variables in an OpenFisca ruleset
+- teams who want to serve data to a frontend app from a generalised backend API
+
+""",
     "TOS": None,
     "CONTACT": {
         "name": "NSW Government - Department of Industry Planning and Environment",
