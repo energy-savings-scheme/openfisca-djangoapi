@@ -1,3 +1,8 @@
+""" Developer note
+    - This module defines the Django command `fetch_entities` which is run in terminal by: `python manage.py fetch_entities`.
+      This command is defined in the `Command.handle()` method
+"""
+
 import requests
 
 from django.conf import settings
@@ -11,6 +16,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
+            self.stdout.ending = ""
+            self.stdout.write(
+                self.style.SUCCESS("\n##### Running `fetch_entities` ###############\n")
+            )
+
             # Get variables from API
             entities_data = requests.get(f"{settings.OPENFISCA_API_URL}/entities")
             data = entities_data.json()
@@ -21,9 +31,11 @@ class Command(BaseCommand):
                     f"""[HTTPError]: the OpenFisca API returned a <{entities_data.status_code}> response. Expected <200> response.\nCheck that the specified OpenFisca API ({settings.OPENFISCA_API_URL}) is online."""
                 )
 
+            self.stdout.write(self.style.SUCCESS("Adding Entities to database "))
+
             # Iterate through entities
             for name in data.keys():
-                json = entities_data[name]
+                json = data[name]
                 description = json.get("description")
                 plural = json.get("plural")
                 documentation = json.get("documentation")
@@ -39,13 +51,13 @@ class Command(BaseCommand):
                 if not created:
                     self.stdout.write(
                         self.style.WARNING(
-                            f"{entity.__repr__()} already exists in database. No action taken..."
+                            f"\n{entity.__repr__()} already exists in database. No action taken..."
                         )
                     )
 
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Successfully populated database with Entities from {settings.OPENFISCA_API_URL}/entities"
+                    f"\nSuccessfully updated database for {len(data.keys())} entities!\n"
                 )
             )
 
