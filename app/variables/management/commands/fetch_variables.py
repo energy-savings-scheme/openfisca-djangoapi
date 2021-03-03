@@ -5,8 +5,8 @@
       of requests.
     - We perform these requests asynchronously to improve the speed of the operation. The improvement is about 50x
     - The three `async` functions ("fetch", "bound_fetch", and "run") define this async workflow
-
 """
+
 import asyncio
 from aiohttp import ClientSession
 import requests
@@ -117,8 +117,6 @@ class Command(BaseCommand):
                 _new_item = json
                 _new_item["name"] = name
                 variables_list.append(_new_item)
-
-            # variables_list = variables_list[0:20]
 
             num_created = 0
             num_already_exists = 0
