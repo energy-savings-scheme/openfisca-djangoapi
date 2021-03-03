@@ -100,5 +100,5 @@ pgdata
 db.sqlite3
 *.sqlite3
 
-# VScode
+#vscode
 .vscode/
