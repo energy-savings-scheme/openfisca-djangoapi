@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.db.models import Count, Q
-
+import re
 from rest_framework import generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -34,6 +34,24 @@ def updateByVariableTree():
             update_categories(majorCat, subCat)
 
 
+def makeAlias(entry):
+    toReplace = {'_is': "", '_and': '&', '_the': "",
+                 '_a_': " ", "electricity": "elec", 'number': 'no.'}
+
+    name0 = entry.name
+    for word, newWord in toReplace.items():
+        name0 = name0.replace(word, newWord)
+
+    pre_alias = " ".join(name0.split("_")).title()
+    alias = re.sub(r'\b[A-Z]\d+\s', "", pre_alias)
+    # get rid of the schedule label
+    if entry.metadata is None:
+        entry.metadata = {'alias': alias}
+    else:
+        entry.metadata['alias'] = alias
+    entry.save()
+
+
 class VariablesList(generics.ListAPIView):
     """
     # LIST all Variables stored in the database
@@ -57,9 +75,8 @@ class VariablesList(generics.ListAPIView):
     # pagination_class = LargeResultsSetPagination
 
     # updateByVariableTree()
-
-    # Variable.objects.filter(metadata__minorCat='resa').update(
-    #     metadata={'majorCat': 'resa', 'minorCat': 'resa'})
+    # for entry in Variable.objects.all():
+    #     makeAlias(entry)
 
     def get_queryset(self):
         query_set = Variable.objects.all()
