@@ -1,5 +1,15 @@
 ## Install and run locally (developers)
 
+These instructions will help you:
+1) Clone the repo to your local machine
+2) Create a new virtual environment to install Python dependencies
+3) Initialise the sqlite3 database
+4) Create a Django Superuser (for accessing the Django Admin at http://localhost:8000/admin/)
+5) Ingest OpenFisca data from the specified OpenFisca API URL
+6) Serve the Django Webserver locally at http://localhost:8000/
+
+***
+
 Clone this repo:
 
 ```
@@ -48,8 +58,7 @@ Ingest an OpenFisca ruleset into the database
 ```
 # By default the database will be empty. To ingest data from an OpenFisca API:
 
-# 1) Make sure you've set the `OPENFISCA_API_URL` environment variable in
-# a .env file in the project root directory
+# 1) You must set the `OPENFISCA_API_URL` environment variable in a `.env` file in the project root directory
 # e.g. OPENFISCA_API_URL=https://dpie-ess-dev.herokuapp.com
 
 # 2) run the Django `fetch_all` command
@@ -63,7 +72,7 @@ Log into the admin backend
 # Launch the webserver locally
 $ python app/manage.py runserver
 
-# On your browser naviate to http://localhost:8000/admin/
+# In your browser naviate to http://localhost:8000/admin/
 # Enter the superuser username and password that your just created
 
 et voila!
