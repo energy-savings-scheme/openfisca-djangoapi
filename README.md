@@ -88,7 +88,7 @@ $ docker-compose run app manage createsuperuser
 ## Serve with a local development environment
 Alternatively you can create a local development environment on which to launch this app.
 
-To do this, follow theseinstructions: [local_deployment.md](docs/local_deployment.md).
+To do this, follow these instructions: [local_deployment.md](docs/local_deployment.md).
 
 
 ## Awesome resources
