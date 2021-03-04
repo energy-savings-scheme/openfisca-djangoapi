@@ -10,9 +10,10 @@ class FormulaVariableInline(admin.TabularInline):
 
 class VariableAdmin(admin.ModelAdmin):
     list_display = ["name", "description", "value_type", "definition_period"]
-    inlines = (FormulaVariableInline,)
+    inlines = (FormulaVariableInline,)  # ?
     list_filter = ("entity",)
     search_fields = ("name",)
 
 
 admin.site.register(Variable, VariableAdmin)
+# cannot register FormulaVariable?

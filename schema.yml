@@ -1,0 +1,408 @@
+openapi: 3.0.3
+info:
+  title: OpenFisca-DjangoAPI Documentation
+  version: 0.0.0
+  description: A database and Django webserver layer for serving OpenFisca rulesets.
+  contact:
+    name: NSW Government - Department of Industry Planning and Environment
+    url: https://github.com/energy-savings-scheme
+  license:
+    name: Licensed under the MIT License
+    url: https://github.com/RamParameswaran/openfisca-djangoapi/blob/main/LICENSE
+paths:
+  /entities/:
+    get:
+      operationId: entities_list
+      description: |-
+        ## LIST all Entities stored in the database
+
+        ### Returns
+        - array of Entity objects (JSON)
+
+        ### Query params
+        - None
+      tags:
+      - entities
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EntityList'
+          description: ''
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /variables/:
+    get:
+      operationId: variables_list
+      description: |-
+        ## LIST all Variables stored in the database
+
+        ### Returns
+        - array of Variable objects (JSON)
+
+        ### Query params (optional)
+        This endpoint accept the following query params:
+        - search [str]: e.g "/variables?search=abc"
+        - is_final [bool]: e.g. "/variables?is_final=true"
+
+        Multiple queries can be combined with "&" (for example: "/variables?search=abc&is_final=true")
+      tags:
+      - variables
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VariableList'
+          description: ''
+  /variables/{variable_name}/:
+    get:
+      operationId: variables_retrieve
+      description: |-
+        ## GET details of a single Variable
+
+        ### Returns
+        - a Variable object (JSON)
+        - or a 404 error if the specified Variable could not be found
+
+        ### URL parameter (required)
+        The following url parameter must be specified
+        - variable_name [str]: e.g. "/variables/<variable_name>/
+      parameters:
+      - in: path
+        name: variable_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - variables
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableList'
+          description: ''
+  /variables/{variable_name}/children/:
+    get:
+      operationId: variables_children_retrieve
+      description: |-
+        ## GET dependency tree of a single Variable
+
+        ### Returns
+        - a tree structure (in JSON format) recursively listing each child of the specified Variable, and each of <em>that variable's</em> children, etc.
+        - or a 404 error if the specified Variable could not be found
+        - the structrue of the tree is:
+            ```python
+            {  name: "abc",
+                children: [
+                            {name: "def" , children: [ ... ]},
+                            {name: "ghi" , children: [ ... ]},
+                          ]
+            }
+            ```
+
+        ### URL parameter (required)
+        The following url parameter must be specified
+        - variable_name [str]: e.g. "/variables/<variable_name>/children/
+      parameters:
+      - in: path
+        name: variable_name
+        schema:
+          type: string
+        required: true
+      tags:
+      - variables
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableChildren'
+          description: ''
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    DefinitionPeriodEnum:
+      enum:
+      - MONTH
+      - YEAR
+      - ETERNITY
+      type: string
+    EntityList:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Entity name
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: Human-readable description
+          maxLength: 255
+        plural:
+          type: string
+          nullable: true
+          description: Human-readable plural name
+          maxLength: 255
+        documentation:
+          type: string
+          nullable: true
+          description: Documentation
+          maxLength: 255
+        is_person:
+          type: boolean
+          description: Specifies whether the entity is a single entity (`Person`)
+            or a group entity
+      required:
+      - name
+    NullEnum:
+      enum:
+      - null
+    ValueTypeEnum:
+      enum:
+      - Int
+      - Float
+      - Boolean
+      - String
+      - Date
+      - Enum
+      type: string
+    VariableChildren:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Variable name
+          maxLength: 255
+        children:
+          type: string
+      required:
+      - children
+      - name
+    VariableList:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Variable name
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: Human-readable description
+          maxLength: 255
+        value_type:
+          nullable: true
+          description: The value type of the variable
+          oneOf:
+          - $ref: '#/components/schemas/ValueTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        entity:
+          type: string
+          readOnly: true
+        definition_period:
+          nullable: true
+          description: Period the variable is defined for
+          oneOf:
+          - $ref: '#/components/schemas/DefinitionPeriodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        default_value:
+          type: string
+          nullable: true
+          description: Default value of the variable.
+          maxLength: 255
+        possible_values:
+          type: string
+          nullable: true
+        metadata:
+          type: string
+          nullable: true
+        children:
+          type: array
+          items:
+            type: string
+        parents:
+          type: array
+          items:
+            type: string
+      required:
+      - children
+      - entity
+      - name
+      - parents
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: Session

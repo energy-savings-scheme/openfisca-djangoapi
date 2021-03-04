@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_filters",
     "rest_framework",
+    "drf_spectacular",
     # Our apps
     "entities.apps.EntityConfig",
     "variables.apps.VariableConfig",
@@ -98,6 +99,8 @@ REST_FRAMEWORK = {
     # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     # Authentication settings
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    # Swagger Documentation
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Database
@@ -173,6 +176,30 @@ IS_WSGI = bool(os.environ.get("IS_WSGI", False))
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 
+
+# Spectacular Swagger documentation settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "OpenFisca-DjangoAPI Documentation",
+    "DESCRIPTION": """A database and Django webserver layer for serving OpenFisca rulesets.\n 
+What does it do?
+- ingests a OpenFisca ruleset into a SQL database, allowing for efficient/complex queries
+- provides useful Restful endpoints for frontend services to query ruleset relations
+
+Who should use this?
+- teams who want to interrogate the <em>realtionship</em> between Variables in an OpenFisca ruleset
+- teams who want to serve data to a frontend app from a generalised backend API
+
+""",
+    "TOS": None,
+    "CONTACT": {
+        "name": "NSW Government - Department of Industry Planning and Environment",
+        "url": "https://github.com/energy-savings-scheme",
+    },
+    "LICENSE": {
+        "name": "Licensed under the MIT License",
+        "url": "https://github.com/RamParameswaran/openfisca-djangoapi/blob/main/LICENSE",
+    },
+}
 
 ###########################################
 ###########################################
