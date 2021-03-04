@@ -27,10 +27,16 @@ Install docker and docker-compose on your machine (if you don't already have it 
 - docker: https://docs.docker.com/get-docker/
 - docker-compose: https://docs.docker.com/compose/install/
 
+Check config parameters:
+```
+# Some config params are seting in the `docker-compose.yml` file
+# The most relevant are the `app->environment` variables such as "OPENFISCA_API_URL" and "PORT"
+# Change these as necessary.
+
+```
 Init project:
 
 ```
-# First ensure that the `OPENFISCA_API_URL` environment variable is correctly set in the file `docker-compose.yml`
 $ cd openfisca-djangoapi
 $ docker-compose build
 ```
@@ -52,9 +58,7 @@ _Now your django app is available on http://localhost:8000, but it's optional fo
 
 ### Container commands
 
-The image has
-
-Run a command:
+You can run Django and bash command in the Docker container:
 
 ```
 $ docker-compose run app <command>
