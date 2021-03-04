@@ -33,7 +33,7 @@ SECRET_KEY = "jop1!g_+tqprunn=)bdx#qlmtjk6&b6!c&kz(d8d#^7&z38)d="
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", True))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["0.0.0.0", "localhost", "*"]
 
 APPEND_SLASH = True
 
@@ -107,16 +107,20 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    },
-    "postgresql": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("POSTGRES_DB_NAME"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_PORT_5432_TCP_ADDR"),
-        "PORT": os.environ.get("POSTGRES_PORT_5432_TCP_PORT"),
-    },
+    }
 }
+
+if os.environ.get("POSTGRES_DB_NAME"):
+    DATABASES["default"].update(
+        {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": os.environ.get("POSTGRES_DB_NAME"),
+            "USER": os.environ.get("POSTGRES_USER"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": os.environ.get("POSTGRES_PORT_5432_TCP_ADDR"),
+            "PORT": os.environ.get("POSTGRES_PORT_5432_TCP_PORT"),
+        }
+    )
 
 
 # Password validation
