@@ -29,6 +29,7 @@ dev      : Start a normal Django development server
 bash     : Start a bash shell
 manage   : Start manage.py
 setup_db : Setup the initial database. Configure \$POSTGRES_DB_NAME in docker-compose.yml
+fetch_data : Ingest data from OpenFisca API (url specified in .env file)
 lint     : Run pylint
 python   : Run a python command
 shell    : Start a Django Python shell
@@ -60,8 +61,12 @@ case "$1" in
         python manage.py "${@:2}"
     ;;
     setup_db)
+        psql -h $POSTGRES_PORT_5432_TCP_ADDR -U $POSTGRES_USER -c "DROP DATABASE IF EXISTS $POSTGRES_DB_NAME"
         psql -h $POSTGRES_PORT_5432_TCP_ADDR -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB_NAME"
         python manage.py migrate
+    ;;
+    fetch_data)
+        python manage.py fetch_all
     ;;
     lint)
         pylint "${@:2}"

@@ -52,7 +52,7 @@ Ingest an OpenFisca ruleset into the database
 ```
 # By default the database will be empty. To ingest data from an OpenFisca API:
 
-# 1) Make sure you've set the `OPENFISCA_API_URL` environment variable in 
+# 1) Make sure you've set the `OPENFISCA_API_URL` environment variable in
 # a .env file in the project root directory
 # e.g. OPENFISCA_API_URL=https://dpie-ess-dev.herokuapp.com
 
@@ -75,6 +75,8 @@ et voila!
 
 ## Docker
 
+<em>First ensure that the `OPENFISCA_API_URL` environment variable is correctly set in the file `docker-compose.yml`</em>
+
 Init project:
 
 ```
@@ -87,6 +89,7 @@ Setup database:
 ```
 $ docker-compose up -d postgres
 $ docker-compose run app setup_db
+$ docker-compose run app fetch_data
 ```
 
 Launch:
