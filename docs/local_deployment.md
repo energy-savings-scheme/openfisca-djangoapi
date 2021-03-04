@@ -1,4 +1,4 @@
-## Install and run locally (developers)
+## Install and run locally (developers) :house_with_garden:
 
 These instructions will help you:
 1) Clone the repo to your local machine
@@ -10,14 +10,14 @@ These instructions will help you:
 
 ***
 
-Clone this repo:
+#### Clone this repo :alien:
 
 ```
 $ git clone git@github.com:RamParameswaran/openfisca-djangoapi.git
 $ cd openfisca-djangoapi
 ```
 
-Create virtual environment (python 3.7) and install requirements
+####  Create virtual environment (python 3.7) and install requirements
 
 ```
 # We're using `virtualenvwrapper` to create the virtual env here, but you can use any other virtual env tool...
@@ -27,7 +27,7 @@ $ mkvirtualenv openfisca-django --python=python3.7
 $ pip install -r services/app/requirements.txt
 ```
 
-Run the Django server locally
+####  Run the Django server locally :snake:
 
 ```
 # First try running the Django server locally
@@ -53,7 +53,7 @@ $ python app/manage.py createsuperuser
 $ python app/manage.py runserver
 ```
 
-Ingest an OpenFisca ruleset into the database
+####  Ingest an OpenFisca ruleset into the database :balance_scale:
 
 ```
 # By default the database will be empty. To ingest data from an OpenFisca API:
@@ -66,7 +66,7 @@ $ python app/manage.py fetch_all
 
 ```
 
-Log into the admin backend
+####  Log into the admin backend :thumbsup:
 
 ```
 # Launch the webserver locally
