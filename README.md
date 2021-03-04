@@ -75,7 +75,13 @@ et voila!
 
 ## Docker
 
+> We recommend you use Docker for local development **and** deployment. This ensures parity between development and production environments.
+
 <em>First ensure that the `OPENFISCA_API_URL` environment variable is correctly set in the file `docker-compose.yml`</em>
+
+Install docker and docker-compose on your machine (if you don't already have it installed):
+- docker: https://docs.docker.com/get-docker/
+- docker-compose: https://docs.docker.com/compose/install/
 
 Init project:
 
@@ -87,7 +93,6 @@ $ docker-compose build
 Setup database:
 
 ```
-$ docker-compose up -d postgres
 $ docker-compose run app setup_db
 $ docker-compose run app fetch_data
 ```
@@ -106,7 +111,7 @@ $ docker-compose up web
 
 _Now your django app is available on http://localhost, but it's optional for development_
 
-## Container commands
+### Container commands
 
 The image has
 
@@ -123,20 +128,15 @@ Available commands:
 | dev      | Start a normal Django development server                                        |
 | bash     | Start a bash shell                                                              |
 | manage   | Start manage.py                                                                 |
-| setup_db | Setup the initial database. Configure _$POSTGRES_DB_NAME_ in docker-compose.yml |
+| setup_db | Setup the initial database. Any existing DB will be destroyed first.
+| fetch_data | Ingests OpenFisca ruleset. Configure _$OPENFISCA_API_URL_ in docker-compose.yml |
 | lint     | Run pylint                                                                      |
 | python   | Run a python command                                                            |
 | shell    | Start a Django Python shell                                                     |
 | uwsgi    | Run uwsgi server                                                                |
 | help     | Show this message                                                               |
 
-### Create a Django app
-
-```
-$ docker-compose run app manage startapp myapp
-```
-
-### Create a super user
+#### Example: Create a Django superuser (to access the admin portal)
 
 ```
 $ docker-compose run app manage createsuperuser
@@ -144,18 +144,5 @@ $ docker-compose run app manage createsuperuser
 
 ## Awesome resources
 
-Useful awesome list to learn more about all the different components used in this repository.
+See [additional_resources.md](docs/additional_resources.md) to learn more about all the different components used in this repository.
 
-- [Docker](https://github.com/veggiemonk/awesome-docker)
-- [Django](https://gitlab.com/rosarior/awesome-django)
-- [Python](https://github.com/vinta/awesome-python)
-- [Nginx](https://github.com/agile6v/awesome-nginx)
-- [AWS](https://github.com/donnemartin/awesome-aws)
-
-## Useful links
-
-- [Docker Hub Python](https://hub.docker.com/_/python/)
-- [Docker Hub Postgres](https://hub.docker.com/_/postgres/)
-- [Docker compose Postgres environment variables](http://stackoverflow.com/questions/29580798/docker-compose-environment-variables)
-- [Quickstart: Docker Compose and Django](https://docs.docker.com/compose/django/)
-- [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
