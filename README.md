@@ -54,7 +54,7 @@ Launch:
 $ docker-compose up app
 ```
 
-_Now your django app is available on http://localhost:8000, but it's optional for development_
+_Now your django app is available on http://localhost:8000_
 
 ### Container commands
 
