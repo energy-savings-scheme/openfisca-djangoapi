@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from entities.models import Entity
-from variables.models import FormulaVariable, Variable
+from variables.models import Variable
 
 
 class Command(BaseCommand):
@@ -14,10 +14,11 @@ class Command(BaseCommand):
 
         try:
             # Get entities from API
-            data = requests.get(f"{settings.OPENFISCA_API_URL}/variables").json()
+            data = requests.get(
+                f"{settings.OPENFISCA_API_URL}/variables").json()
 
             # Create shallow** list of variables
-            ## ** `shallow` means that the list only stores the variable name and URL for details
+            # ** `shallow` means that the list only stores the variable name and URL for details
             variables_list = []
             for name, json in data.items():
                 _new_item = json
@@ -26,11 +27,12 @@ class Command(BaseCommand):
 
             num_created = 0
             num_already_exists = 0
-
+            print(num_created)
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
-                obj, created = Variable.objects.get_or_create(name=variable["name"])
+                obj, created = Variable.objects.get_or_create(
+                    name=variable["name"])
 
                 # Write to terminal to show progress
                 self.stdout.ending = ""
@@ -81,9 +83,15 @@ class Command(BaseCommand):
                             if (content.find(f'"{variable_name}"') > 0) or (
                                 content.find(f"'{variable_name}'") > 0
                             ):
-                                FormulaVariable.objects.get_or_create(
-                                    parent=obj, child=variable_obj
-                                )
+                                # FormulaVariable.objects.get_or_create(
+                                #     parent=obj, child=variable_obj
+                                # )
+                                obj.children.add(variable_obj)
+
+                                # Write to terminal to show progress
+                                self.stdout.ending = ""
+                                self.stdout.write(self.style.SUCCESS("*"))
+                                self.stdout.ending = "\n"
 
                     obj.save()
                     # Write to terminal to show progress
@@ -98,4 +106,5 @@ class Command(BaseCommand):
             )
 
         except CommandError as error:
-            self.stdout.write(self.style.ERROR(f"Error creating Entity: {str(error)}"))
+            self.stdout.write(self.style.ERROR(
+                f"Error creating Entity: {str(error)}"))

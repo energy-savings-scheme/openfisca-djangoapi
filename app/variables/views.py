@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 
 
 from config.pagination import LargeResultsSetPagination
-from variables.models import FormulaVariable, Variable
-from variables.serializers import VariableListSerializer, VariableChildrenSerializer
+from variables.models import Variable
+from variables.serializers import VariableListSerializer
 
 
 # TODO: allow different wordings
@@ -55,6 +55,12 @@ def makeAlias(entry):
     entry.save()
 
 
+def findAllParents():
+    for entry in Variable.objects.all():
+        entry.parents.set(entry.parent_set.all())
+        entry.save()
+
+
 class VariablesList(generics.ListAPIView):
     """
     # LIST all Variables stored in the database
@@ -65,7 +71,8 @@ class VariablesList(generics.ListAPIView):
     # Query params (optional)
     This endpoint accept the following query params:
     - search [str]: e.g "/variables?search=abc"
-    - is_final [bool]: e.g. "/variables?is_final=true"
+    - is_output [bool]: e.g. "/variables?is_output=true"
+    - is_input [bool]: e.g. "/variables?is_input=true"
     - majorcat [str]: e.g "/variables?majorcat=E"
     - minorcat [str]: e.g "/variables?majorcat=E1"
 
@@ -77,9 +84,12 @@ class VariablesList(generics.ListAPIView):
     serializer_class = VariableListSerializer
     # pagination_class = LargeResultsSetPagination
 
-    # updateByVariableTree()
-    for entry in Variable.objects.all():
-        makeAlias(entry)
+    # TODO: where should I leave these as one-time thing in the management file?
+
+    #  updateByVariableTree()
+    # for entry in Variable.objects.all():
+    #     makeAlias(entry)
+    # findAllParents():
 
     def get_queryset(self):
         query_set = Variable.objects.all()
@@ -88,13 +98,13 @@ class VariablesList(generics.ListAPIView):
         majorCat = self.request.query_params.get("majorcat", None)
         minorCat = self.request.query_params.get("minorcat", None)
 
-        if is_output is not None:
+        if is_input is not None:
             query_set = query_set.annotate(
                 num_parents=Count("children")).filter(num_parents=0)
 
-        if is_input is not None:
+        if is_output is not None:
             query_set = query_set.annotate(
-                num_children=Count("is_parent")).filter(num_children=0)
+                num_children=Count("parents")).filter(num_children=0)
 
         if majorCat is not None:
             query_set = query_set.filter(metadata__majorCat=majorCat)
@@ -129,7 +139,7 @@ class VariableDetail(generics.RetrieveAPIView):
     lookup_url_kwarg = "variable_name"
 
 
-class VariableChildrenList(generics.RetrieveAPIView):
+# class VariableChildrenList(generics.RetrieveAPIView):
     """
     # GET dependency tree of a single Variable
 
@@ -152,7 +162,10 @@ class VariableChildrenList(generics.RetrieveAPIView):
 
     """
 
-    queryset = Variable.objects.all()
-    serializer_class = VariableChildrenSerializer
-    lookup_field = "name"
-    lookup_url_kwarg = "variable_name"
+    # queryset = Variable.objects.all()
+    # serializer_class = VariableChildrenSerializer
+    # lookup_field = "name"
+    # lookup_url_kwarg = "variable_name"
+
+# TODO: API endpoint /children-graph for a graph representation of all children relationship
+# class ChildrenGraph(generics.RetrieveAPIView):

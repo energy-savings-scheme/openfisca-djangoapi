@@ -1,13 +1,16 @@
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
 
-from variables.models import FormulaVariable, Variable
+from variables.models import Variable
 
 
 class VariableListSerializer(serializers.ModelSerializer):
     entity = serializers.StringRelatedField()
-    children = serializers.StringRelatedField(source="get_children", many=True)
-    parents = serializers.StringRelatedField(source="get_parents", many=True)
+    children = serializers.StringRelatedField(many=True)
+    parents = serializers.StringRelatedField(many=True)
+
+    # children = serializers.StringRelatedField(source="get_children", many=True)
+    # parents = serializers.StringRelatedField(source="get_parents", many=True)
 
     class Meta:
         model = Variable
@@ -26,12 +29,12 @@ class VariableListSerializer(serializers.ModelSerializer):
         depth = 0
 
 
-class VariableChildrenSerializer(serializers.ModelSerializer):
-    children = RecursiveField(source="get_children", many=True)
+# class VariableChildrenSerializer(serializers.ModelSerializer):
+#     children = RecursiveField(source="get_children", many=True)
 
-    class Meta:
-        model = Variable
-        fields = [
-            "name",
-            "children",
-        ]
+#     class Meta:
+#         model = Variable
+#         fields = [
+#             "name",
+#             "children",
+#         ]
