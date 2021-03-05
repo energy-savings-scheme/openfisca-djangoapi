@@ -29,12 +29,12 @@ class VariableListSerializer(serializers.ModelSerializer):
         depth = 0
 
 
-# class VariableChildrenSerializer(serializers.ModelSerializer):
-#     children = RecursiveField(source="get_children", many=True)
+class VariableChildrenSerializer(serializers.ModelSerializer):
+    children = RecursiveField(many=True)
 
-#     class Meta:
-#         model = Variable
-#         fields = [
-#             "name",
-#             "children",
-#         ]
+    class Meta:
+        model = Variable
+        fields = [
+            "name",
+            "children",
+        ]

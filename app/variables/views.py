@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from config.pagination import LargeResultsSetPagination
 from variables.models import Variable
-from variables.serializers import VariableListSerializer
+from variables.serializers import VariableListSerializer, VariableChildrenSerializer
 
 
 # TODO: allow different wordings
@@ -139,7 +139,7 @@ class VariableDetail(generics.RetrieveAPIView):
     lookup_url_kwarg = "variable_name"
 
 
-# class VariableChildrenList(generics.RetrieveAPIView):
+class VariableChildrenList(generics.RetrieveAPIView):
     """
     # GET dependency tree of a single Variable
 
@@ -162,10 +162,10 @@ class VariableDetail(generics.RetrieveAPIView):
 
     """
 
-    # queryset = Variable.objects.all()
-    # serializer_class = VariableChildrenSerializer
-    # lookup_field = "name"
-    # lookup_url_kwarg = "variable_name"
+    queryset = Variable.objects.all()
+    serializer_class = VariableChildrenSerializer
+    lookup_field = "name"
+    lookup_url_kwarg = "variable_name"
 
 # TODO: API endpoint /children-graph for a graph representation of all children relationship
 # class ChildrenGraph(generics.RetrieveAPIView):
