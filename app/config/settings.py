@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    "django_filters",
     "rest_framework",
     "drf_spectacular",
     # Our apps
@@ -88,12 +89,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    # "rest_framework.renderers.BrowsableAPIRenderer",
+    "rest_framework.renderers.BrowsableAPIRenderer",
     "rest_framework.renderers.JSONRenderer",
 )
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
+    # filter backend
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     # Authentication settings
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
     # Swagger Documentation
@@ -207,4 +210,4 @@ Who should use this?
 ###########################################
 
 # OpenFisca settings
-OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default=None)
+OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
