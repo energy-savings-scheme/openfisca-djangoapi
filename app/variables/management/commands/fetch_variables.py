@@ -108,7 +108,7 @@ class Command(BaseCommand):
 
             # TODO: where should I leave these as one-time thing here?
 
-            # UpDating MetaData
+            # UpDating MetaData here
 
             # metadata.updateByVariableTree()
             # for entry in Variable.objects.all():

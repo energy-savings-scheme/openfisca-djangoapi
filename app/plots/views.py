@@ -3,10 +3,13 @@ from django.views.generic.base import TemplateView
 from django.shortcuts import render
 
 
-# TODO: API endpoint /barchart0 for a bar chart listing all variables with their number of children and parents
+def BarChart_id(request):
+    context = {'plot': plots.varIDBarChart('id')}
+    response = render(request, 'plots/barchart.html', context)
+    return response
 
 
-def BarChart(request):
-    context = {'plot': plots.plot1d}
+def BarChart_alias(request):
+    context = {'plot': plots.varIDBarChart('alias')}
     response = render(request, 'plots/barchart.html', context)
     return response
