@@ -1,4 +1,5 @@
 import requests
+# import variables import metadata
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -104,6 +105,15 @@ class Command(BaseCommand):
                     f"\nSuccessfully populated database with Variables from {settings.OPENFISCA_API_URL}/variables.\n    {num_created} variables added to DB.\n    {num_already_exists} variables already existed in DB"
                 )
             )
+
+            # TODO: where should I leave these as one-time thing here?
+
+            # UpDating MetaData
+
+            # metadata.updateByVariableTree()
+            # for entry in Variable.objects.all():
+            #     metadata.makeAlias(entry)
+            # metadata.findAllParents()
 
         except CommandError as error:
             self.stdout.write(self.style.ERROR(

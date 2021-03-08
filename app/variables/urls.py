@@ -6,5 +6,4 @@ urlpatterns = [
     path("", VariablesList.as_view()),
     path("<str:variable_name>/", VariableDetail.as_view()),
     path("<str:variable_name>/children/", VariableChildrenList.as_view()),
-
 ]
