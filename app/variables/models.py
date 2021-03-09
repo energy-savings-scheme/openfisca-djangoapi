@@ -1,5 +1,4 @@
 from django.db import models
-# from jsonfield import JSONField
 
 
 class Variable(models.Model):
@@ -30,8 +29,8 @@ class Variable(models.Model):
     name = models.CharField(
         max_length=255, null=False, blank=False, help_text="Variable name"
     )
-    description = models.CharField(
-        max_length=255, null=True, blank=True, help_text="Human-readable description"
+    description = models.TextField(
+        null=True, blank=True, help_text="Human-readable description"
     )
     value_type = models.CharField(
         max_length=16,
@@ -55,8 +54,7 @@ class Variable(models.Model):
         blank=True,
         help_text="Period the variable is defined for",
     )
-    reference = models.CharField(
-        max_length=255,
+    reference = models.TextField(
         null=True,
         blank=True,
         help_text="Legislative reference describing the variable",
@@ -85,34 +83,3 @@ class Variable(models.Model):
 
     def __repr__(self):
         return f"<Variable: {str(self)}>"
-
-    # @property
-    # def get_children(self):
-    #     children_links = FormulaVariable.objects.filter(parent=self)
-    #     children = Variable.objects.filter(children__in=children_links)
-
-    #     return children
-
-    # @property
-    # def get_parents(self):
-    #     parents_links = FormulaVariable.objects.filter(child=self)
-    #     parents = Variable.objects.filter(is_parent__in=parents_links)
-
-    #     return parents
-
-
-# class FormulaVariable(models.Model):
-#     parent = models.ForeignKey(
-#         "variables.Variable",
-#         on_delete=models.CASCADE,
-#         null=True,
-#         blank=True,
-#         related_name="is_parent",
-#     )
-#     child = models.ForeignKey(
-#         "variables.Variable",
-#         on_delete=models.CASCADE,
-#         null=True,
-#         blank=True,
-#         related_name="children",
-#     )

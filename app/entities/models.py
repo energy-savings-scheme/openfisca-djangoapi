@@ -23,9 +23,7 @@ class Entity(models.Model):
     plural = models.CharField(
         max_length=255, null=True, blank=True, help_text="Human-readable plural name"
     )
-    documentation = models.CharField(
-        max_length=255, null=True, blank=True, help_text="Documentation"
-    )
+    documentation = models.TextField(null=True, blank=True, help_text="Documentation")
     is_person = models.BooleanField(
         default=False,
         help_text="Specifies whether the entity is a single entity (`Person`) or a group entity",

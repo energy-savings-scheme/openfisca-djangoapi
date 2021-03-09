@@ -1,5 +1,4 @@
 from . import plots
-from django.views.generic.base import TemplateView
 from django.shortcuts import render
 
 
