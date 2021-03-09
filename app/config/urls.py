@@ -39,6 +39,7 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("plots/", include(("plots.urls", "plots"), namespace="plots"))
 ]
 
 # Host the static from uWSGI

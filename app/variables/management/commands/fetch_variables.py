@@ -10,12 +10,13 @@
 import asyncio
 from aiohttp import ClientSession
 import requests
+from variables import metadata
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from entities.models import Entity
-from variables.models import FormulaVariable, Variable
+from variables.models import Variable
 
 
 async def fetch(url, session, django_command):
@@ -111,7 +112,7 @@ class Command(BaseCommand):
                 )
 
             # Create shallow** list of variables
-            ## ** `shallow` means that the list only stores the variable name and URL for details
+            # ** `shallow` means that the list only stores the variable name and URL for details
             variables_list = []
             for name, json in data.items():
                 _new_item = json
@@ -126,7 +127,8 @@ class Command(BaseCommand):
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
-                obj, created = Variable.objects.get_or_create(name=variable["name"])
+                obj, created = Variable.objects.get_or_create(
+                    name=variable["name"])
 
                 # Write to terminal to show progress
                 self.stdout.write(self.style.SUCCESS("."))
@@ -179,10 +181,8 @@ class Command(BaseCommand):
                         if (content.find(f'"{variable_name}"') > 0) or (
                             content.find(f"'{variable_name}'") > 0
                         ):
-                            FormulaVariable.objects.get_or_create(
-                                parent=obj, child=variable_obj
-                            )
-
+                            obj.children.add(variable_obj)
+                
                 obj.save()
 
             self.stdout.write(
@@ -191,7 +191,14 @@ class Command(BaseCommand):
                 )
             )
 
+            # UpDating MetaData and parents relations
+            metadata.updateByVariableTree()
+            for entry in Variable.objects.all():
+                metadata.makeAlias(entry)
+            metadata.findAllParents()
+
         except CommandError as error:
             self.stdout.write(
                 self.style.ERROR(f"\nError creating Variable: {str(error)}")
             )
+
