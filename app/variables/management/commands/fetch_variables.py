@@ -1,5 +1,5 @@
 import requests
-# import variables import metadata
+from variables import metadata
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         try:
-            # Get entities from API
+            # Get variables from API
             data = requests.get(
                 f"{settings.OPENFISCA_API_URL}/variables").json()
 
@@ -28,7 +28,6 @@ class Command(BaseCommand):
 
             num_created = 0
             num_already_exists = 0
-            print(num_created)
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
@@ -106,14 +105,11 @@ class Command(BaseCommand):
                 )
             )
 
-            # TODO: where should I leave these as one-time thing here?
-
-            # UpDating MetaData here
-
-            # metadata.updateByVariableTree()
-            # for entry in Variable.objects.all():
-            #     metadata.makeAlias(entry)
-            # metadata.findAllParents()
+            # UpDating MetaData and parents relations
+            metadata.updateByVariableTree()
+            for entry in Variable.objects.all():
+                metadata.makeAlias(entry)
+            metadata.findAllParents()
 
         except CommandError as error:
             self.stdout.write(self.style.ERROR(
