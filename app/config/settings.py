@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "drf_spectacular",
+    "corsheaders",
     # Our apps
     "entities.apps.EntityConfig",
     "variables.apps.VariableConfig",
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -89,7 +91,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    "rest_framework.renderers.BrowsableAPIRenderer",
+    # "rest_framework.renderers.BrowsableAPIRenderer",
     "rest_framework.renderers.JSONRenderer",
 )
 
@@ -180,6 +182,9 @@ IS_WSGI = bool(os.environ.get("IS_WSGI", False))
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 
+# Django CORS
+# see: https://pypi.org/project/django-cors-headers/
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Spectacular Swagger documentation settings
 SPECTACULAR_SETTINGS = {
