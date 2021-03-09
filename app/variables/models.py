@@ -83,3 +83,25 @@ class Variable(models.Model):
 
     def __repr__(self):
         return f"<Variable: {str(self)}>"
+
+    def get_all_dependency(self, node_list, edge_list):
+        """
+        Returns all children nodes and directed edge for the
+            maximum depth.
+        This is used for drawing network graph
+            for the children variables
+        """
+
+        node_list.append(self.name)
+
+        if (self.children.count() != 0):
+            for child in self.children.all():
+                edge = (self.name, child.name)
+                edge_list.append(edge)
+                child.get_all_dependency(node_list, edge_list)
+                print(".")
+
+        else:
+            print('----------------')
+
+        return dict(nodes=node_list, edges=edge_list)
