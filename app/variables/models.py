@@ -1,5 +1,5 @@
 from django.db import models
-from jsonfield import JSONField
+# from jsonfield import JSONField
 
 
 class Variable(models.Model):
@@ -24,13 +24,14 @@ class Variable(models.Model):
         ("Enum", "Enum"),
     ]
 
-    DEFINTION_PERIOD = [("MONTH", "MONTH"), ("YEAR", "YEAR"), ("ETERNITY", "ETERNITY")]
+    DEFINTION_PERIOD = [("MONTH", "MONTH"), ("YEAR", "YEAR"),
+                        ("ETERNITY", "ETERNITY")]
 
     name = models.CharField(
         max_length=255, null=False, blank=False, help_text="Variable name"
     )
-    description = models.CharField(
-        max_length=255, null=True, blank=True, help_text="Human-readable description"
+    description = models.TextField(
+        null=True, blank=True, help_text="Human-readable description"
     )
     value_type = models.CharField(
         max_length=16,
@@ -54,8 +55,7 @@ class Variable(models.Model):
         blank=True,
         help_text="Period the variable is defined for",
     )
-    reference = models.CharField(
-        max_length=255,
+    reference = models.TextField(
         null=True,
         blank=True,
         help_text="Legislative reference describing the variable",
@@ -66,8 +66,8 @@ class Variable(models.Model):
         blank=True,
         help_text="Default value of the variable.",
     )
-    possible_values = JSONField(null=True, blank=True)
-    metadata = JSONField(null=True, blank=True)
+    possible_values = models.JSONField(null=True, blank=True)
+    metadata = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -88,6 +88,8 @@ class Variable(models.Model):
         parents = Variable.objects.filter(is_parent__in=parents_links)
 
         return parents
+
+# Question: is_parent a field? children a field?
 
 
 class FormulaVariable(models.Model):

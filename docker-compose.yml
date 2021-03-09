@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   # PostgreSQL
@@ -33,14 +33,15 @@ services:
     environment:
       - DEBUG=True
       - PORT=8000
-      - POSTGRES_DB_NAME=openfisca-djangoapi
-      - POSTGRES_PORT_5432_TCP_ADDR=postgres
-      - POSTGRES_PORT_5432_TCP_PORT=5432
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
-      - PGPASSWORD=docker #this is needed to autofill the password field for creating the db
+      # - POSTGRES_DB_NAME=openfisca_djangoapi
+      # - POSTGRES_PORT_5432_TCP_ADDR=postgres
+      # - POSTGRES_PORT_5432_TCP_PORT=5432
+      # - POSTGRES_USER=docker
+      # - POSTGRES_PASSWORD=docker
+      # - PGPASSWORD=docker #this is needed to autofill the password field for creating the db
       - SECRET_KEY=JeffreyLebowski
       - WSGI_MODULE=config.wsgi:application
+      - OPENFISCA_API_URL=https://dpie-ess-dev.herokuapp.com/
 
   web:
     build:
