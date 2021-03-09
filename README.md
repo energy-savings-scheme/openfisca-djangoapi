@@ -2,60 +2,38 @@
 
 A database and Django webserver layer for serving OpenFisca rulesets
 
+## Serving Locally and Deploying
 
-## Install and run locally (developers)
+#### Serving locally
+This repo can be served in two ways:
+1) Serve with Docker :heavy_check_mark:
+   - [See instructions](#serve-with-docker) :blue_book:
+3) Serve with a local development environment :warning:
+   - Not recommended! :warning:
+   - Instructions in [local_deployment.md](docs/local_deployment.md) 
 
-Clone this repo:
+
+#### Deploying
+- This app can be deployed in a number of ways, we'll leave that up to you :wink:
+- But, here are some considerations
+   - This app uses a sqlite3 database. SQLite runs in memory, and backs up its data store in files on disk. Therefore, deployment environments which have ephemeral filesystems (such as Heroku) are not suitable.
+   - The authors of this repo use AWS ElasticBeanstalk, because it supports deploying from Docker images, and has a persistent filesystem. AWS ElasticBeanstalk requires a few additional config files, located at `/.ebextensions` and `/.platform`. Additional info on ElasticBeanstalk can be found at [aws_elasticbeanstalk_instructions.md](docs/aws_elasticbeanstalk_instructions.md).
+ 
+## Serve with Docker
+
+> We recommend you use Docker for local development **and** deployment. This ensures parity between development and production environments.
+
+Install docker and docker-compose on your machine (if you don't already have it installed):
+- docker: https://docs.docker.com/get-docker/
+- docker-compose: https://docs.docker.com/compose/install/
+
+Check config parameters:
 ```
-$ git clone git@github.com:RamParameswaran/openfisca-djangoapi.git
-$ cd openfisca-djangoapi
+# Some config params are seting in the `docker-compose.yml` file
+# The most relevant are the `app->environment` variables such as "OPENFISCA_API_URL" and "PORT"
+# Change these as necessary.
+
 ```
-
-Create virtual environment (python 3.7) and install requirements
-```
-# We're using `virtualenvwrapper` to create the virtual env here, but you can use any other virtual env tool...
-# NOTE - make sure Python 3.7 is installed on your machine!
-
-$ mkvirtualenv openfisca-django --python=python3.7
-$ pip install -r services/app/requirements.txt
-```
-
-Run the Django server locally
-```
-# First try running the Django server locally
-$ python app/manage.py runserver
-
-# The webserver should return:
-
-System check identified no issues (0 silenced).
-
-    You have 18 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
-    Run 'python manage.py migrate' to apply them.
-    March 01, 2021 - 03:29:31
-    Django version 3.1.7, using settings 'config.settings'
-    Starting development server at http://127.0.0.1:8000/
-    Quit the server with CONTROL-C.
-
-# Next run a database migration and create an admin user
-$ python app/manage.py migrate
-$ python app/manage.py createsuperuser
-# Enter usename and password
-
-# Launch the webserver locally
-$ python app/manage.py runserver
-```
-
-Log into the admin backend
-```
-# On your browser naviate to http://localhost:8000/admin/
-# Enter the superuser username and password that your just created
-
-et voila!
-```
-
-
-## Docker
-
 Init project:
 
 ```
@@ -66,8 +44,8 @@ $ docker-compose build
 Setup database:
 
 ```
-$ docker-compose up -d postgres
 $ docker-compose run app setup_db
+$ docker-compose run app fetch_data
 ```
 
 Launch:
@@ -76,19 +54,11 @@ Launch:
 $ docker-compose up app
 ```
 
-Launch Nginx _(optional)_:
+_Now your django app is available on http://localhost:8000_
 
-```
-$ docker-compose up web
-```
+### Container commands
 
-_Now your django app is available on http://localhost, but it's optional for development_
-
-## Container commands
-
-The image has
-
-Run a command:
+You can run Django and bash command in the Docker container:
 
 ```
 $ docker-compose run app <command>
@@ -101,39 +71,27 @@ Available commands:
 | dev      | Start a normal Django development server                                        |
 | bash     | Start a bash shell                                                              |
 | manage   | Start manage.py                                                                 |
-| setup_db | Setup the initial database. Configure _$POSTGRES_DB_NAME_ in docker-compose.yml |
+| setup_db | Setup the initial database. Any existing DB will be destroyed first.
+| fetch_data | Ingests OpenFisca ruleset. Configure _$OPENFISCA_API_URL_ in docker-compose.yml |
 | lint     | Run pylint                                                                      |
 | python   | Run a python command                                                            |
 | shell    | Start a Django Python shell                                                     |
 | uwsgi    | Run uwsgi server                                                                |
 | help     | Show this message                                                               |
 
-### Create a Django app
-
-```
-$ docker-compose run app manage startapp myapp
-```
-
-### Create a super user
+#### Example: Create a Django superuser (to access the admin portal)
 
 ```
 $ docker-compose run app manage createsuperuser
 ```
 
+## Serve with a local development environment
+Alternatively you can create a local development environment on which to launch this app.
+
+To do this, follow these instructions: [local_deployment.md](docs/local_deployment.md).
+
+
 ## Awesome resources
 
-Useful awesome list to learn more about all the different components used in this repository.
+See [additional_resources.md](docs/additional_resources.md) to learn more about all the different components used in this repository.
 
-- [Docker](https://github.com/veggiemonk/awesome-docker)
-- [Django](https://gitlab.com/rosarior/awesome-django)
-- [Python](https://github.com/vinta/awesome-python)
-- [Nginx](https://github.com/agile6v/awesome-nginx)
-- [AWS](https://github.com/donnemartin/awesome-aws)
-
-## Useful links
-
-- [Docker Hub Python](https://hub.docker.com/_/python/)
-- [Docker Hub Postgres](https://hub.docker.com/_/postgres/)
-- [Docker compose Postgres environment variables](http://stackoverflow.com/questions/29580798/docker-compose-environment-variables)
-- [Quickstart: Docker Compose and Django](https://docs.docker.com/compose/django/)
-- [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)

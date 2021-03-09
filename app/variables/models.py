@@ -29,8 +29,8 @@ class Variable(models.Model):
     name = models.CharField(
         max_length=255, null=False, blank=False, help_text="Variable name"
     )
-    description = models.CharField(
-        max_length=255, null=True, blank=True, help_text="Human-readable description"
+    description = models.TextField(
+        null=True, blank=True, help_text="Human-readable description"
     )
     value_type = models.CharField(
         max_length=16,
@@ -54,8 +54,7 @@ class Variable(models.Model):
         blank=True,
         help_text="Period the variable is defined for",
     )
-    reference = models.CharField(
-        max_length=255,
+    reference = models.TextField(
         null=True,
         blank=True,
         help_text="Legislative reference describing the variable",

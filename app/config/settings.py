@@ -33,7 +33,7 @@ SECRET_KEY = "jop1!g_+tqprunn=)bdx#qlmtjk6&b6!c&kz(d8d#^7&z38)d="
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", True))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["0.0.0.0", "localhost", "*"]
 
 APPEND_SLASH = True
 
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "drf_spectacular",
+    "corsheaders",
     # Our apps
     "entities.apps.EntityConfig",
     "variables.apps.VariableConfig",
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -91,7 +93,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    "rest_framework.renderers.BrowsableAPIRenderer",
+    # "rest_framework.renderers.BrowsableAPIRenderer",
     "rest_framework.renderers.JSONRenderer",
 )
 
@@ -112,16 +114,20 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    },
-    "postgresql": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("POSTGRES_DB_NAME"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_PORT_5432_TCP_ADDR"),
-        "PORT": os.environ.get("POSTGRES_PORT_5432_TCP_PORT"),
-    },
+    }
 }
+
+if os.environ.get("POSTGRES_DB_NAME"):
+    DATABASES["default"].update(
+        {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": os.environ.get("POSTGRES_DB_NAME"),
+            "USER": os.environ.get("POSTGRES_USER"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": os.environ.get("POSTGRES_PORT_5432_TCP_ADDR"),
+            "PORT": os.environ.get("POSTGRES_PORT_5432_TCP_PORT"),
+        }
+    )
 
 
 # Password validation
@@ -178,6 +184,9 @@ IS_WSGI = bool(os.environ.get("IS_WSGI", False))
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
 
+# Django CORS
+# see: https://pypi.org/project/django-cors-headers/
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Spectacular Swagger documentation settings
 SPECTACULAR_SETTINGS = {
@@ -208,5 +217,4 @@ Who should use this?
 ###########################################
 
 # OpenFisca settings
-OPENFISCA_API_URL = env.str(
-    "OPENFISCA_API_URL", default="http://localhost:8001")
+OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
