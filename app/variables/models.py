@@ -1,5 +1,4 @@
 from django.db import models
-# from jsonfield import JSONField
 
 
 class Variable(models.Model):
@@ -68,42 +67,19 @@ class Variable(models.Model):
     )
     possible_values = models.JSONField(null=True, blank=True)
     metadata = models.JSONField(null=True, blank=True)
+    children = models.ManyToManyField(
+        "variables.Variable",
+        blank=True,
+        related_name="parent_set"
+    )
+    parents = models.ManyToManyField(
+        "variables.Variable",
+        blank=True,
+        related_name="children_set"
+    )
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
         return f"<Variable: {str(self)}>"
-
-    @property
-    def get_children(self):
-        children_links = FormulaVariable.objects.filter(parent=self)
-        children = Variable.objects.filter(children__in=children_links)
-
-        return children
-
-    @property
-    def get_parents(self):
-        parents_links = FormulaVariable.objects.filter(child=self)
-        parents = Variable.objects.filter(is_parent__in=parents_links)
-
-        return parents
-
-# Question: is_parent a field? children a field?
-
-
-class FormulaVariable(models.Model):
-    parent = models.ForeignKey(
-        "variables.Variable",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="is_parent",
-    )
-    child = models.ForeignKey(
-        "variables.Variable",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="children",
-    )

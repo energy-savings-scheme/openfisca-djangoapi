@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     # Our apps
     "entities.apps.EntityConfig",
     "variables.apps.VariableConfig",
+    "plots.apps.PlotsConfig",
+
 ]
 
 MIDDLEWARE = [
@@ -73,7 +75,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

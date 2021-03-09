@@ -10,7 +10,9 @@ djangorestframework-recursive==0.1.2    # Recursive Serialization for Django RES
 drf-spectacular==0.13.2     # Sane and flexible OpenAPI 3 schema generation for Django REST framework
 Jinja2==2.10.1              # A small but fast and easy to use stand-alone template engine written in pure python.
 jsonfield==3.1.0            # A reusable Django field that allows you to store validated JSON in your model
+numpy==1.20.1               # A package for array computing with Python.
 psycopg2==2.8.6             # Python-PostgreSQL Database Adapter
 pylint==2.3.1               # python code static checker
+plotly==4.14.3              # interactive data visualization for Python
 requests==2.25.1            # Python HTTP for Humans.
 uwsgi==2.0.18               # The uWSGI Server
