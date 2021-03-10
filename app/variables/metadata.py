@@ -4,8 +4,7 @@ from django.db.models import Count, Q
 
 
 variableTree = {
-    "resa": ["resa"],  # RESA: Recognised Energy Savings Activity
-    "nabers": ["nabers"],
+    "nabers": ["office", "apartment"],
     "D": [
         "D1",
         "D2",
@@ -58,12 +57,12 @@ variableTree = {
 }
 
 
-# TODO: allow different wordings of keywords to find category
 def update_categories(majorCat, minorCat):
     entries = Variable.objects.select_for_update().filter(
-        Q(name__icontains=minorCat) | Q(description__icontains=minorCat)
-    )
-    entries.update(metadata={"majorCat": majorCat, "minorCat": minorCat})
+        Q(name__iregex=rf"{minorCat}[^0-9]") | Q(
+            description__iregex=rf"{minorCat}[^0-9]"))
+    entries.update(
+        metadata={"majorCat": majorCat, "minorCat": minorCat})
 
 
 def updateByVariableTree():
