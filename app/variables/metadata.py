@@ -1,23 +1,69 @@
-
 import re
 from variables.models import Variable
 from django.db.models import Count, Q
 
 
 variableTree = {
-    'resa': ['resa'],    # RESA: Recognised Energy Savings Activity
-    'nabers': ['nabers'],
-    'D': ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'D11', 'D12', 'D13', 'D14', 'D15', ],
-    'E': ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10', 'E11', 'E12', 'E13'],
-    'F': ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15'],
+    "resa": ["resa"],  # RESA: Recognised Energy Savings Activity
+    "nabers": ["nabers"],
+    "D": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "D14",
+        "D15",
+    ],
+    "E": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+    ],
+    "F": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+    ],
 }
 
 
 # TODO: allow different wordings of keywords to find category
 def update_categories(majorCat, minorCat):
     entries = Variable.objects.select_for_update().filter(
-        Q(name__icontains=minorCat) | Q(description__icontains=minorCat))
-    entries.update(metadata={'majorCat': majorCat, 'minorCat': minorCat})
+        Q(name__icontains=minorCat) | Q(description__icontains=minorCat)
+    )
+    entries.update(metadata={"majorCat": majorCat, "minorCat": minorCat})
 
 
 def updateByVariableTree():
@@ -51,7 +97,7 @@ def makeAlias(entry):
     alias = " ".join(aliasList)
 
     if entry.metadata is None:
-        entry.metadata = {'alias': alias}
+        entry.metadata = {"alias": alias}
     else:
         entry.metadata['alias'] = alias
     entry.save()
