@@ -148,7 +148,7 @@ class VariableDependencyGraph():
         G = nx.DiGraph()
         G.add_nodes_from(node_list)
         G.add_edges_from(edge_list)
-        # print(G.nodes)
-        # print(G.edges)
+        print(G.nodes)
+        print(G.edges)
 
     graph(dependencies['nodes'], dependencies['edges'])

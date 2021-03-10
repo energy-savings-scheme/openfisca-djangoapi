@@ -84,6 +84,8 @@ class Variable(models.Model):
     def __repr__(self):
         return f"<Variable: {str(self)}>"
 
+    # This is not a good place for custom function! it causes makemigrations not work with empty db.
+
     def get_all_dependency(self, node_list, edge_list):
         """
         Returns all children nodes and directed edge for the
