@@ -74,32 +74,32 @@ def updateByVariableTree():
 
 
 def makeAlias(entry):
-    toReplace = {
-        "_is": "",
-        "_and": "&",
-        "_the": "",
-        "_a_": " ",
-        "electricity": "elec",
-        "number": "no.",
-        "maximum": "max",
-        "minimum": "min",
-        "_percent": "%",
-        "reference": "ref",
-    }
-    # TODO: how to preserve acronym
+    toReplace = {'_and': '&',
+                 'maximum': 'max',
+                 'minimum': 'min',
+                 '_percent': '%',
+                 'reference': 'ref'}
+
     name0 = entry.name
     for word, newWord in toReplace.items():
         name0 = name0.replace(word, newWord)
 
-    pre_alias = " ".join(name0.split("_")).title()
-    alias0 = re.sub(r"\b[A-Z]\d+\s", "", pre_alias)
-    alias1 = re.sub(r"\d{1}\s", "", alias0)
-    alias = re.sub(r"[A-Z]{1}\s", "", alias1)
-    # get rid of the schedule label
+    alias = re.sub(r'\b[A-Z]\d+_[a-zA-Z0-9]{1}_', "", name0)
+    alias = re.sub(r'\b[A-Z]\d+_', "", alias)
+
+    aliasList = []
+    for word in alias.split("_"):
+        if word.isupper():
+            aliasList.append(word)
+        else:
+            aliasList.append(word.title())
+
+    alias = " ".join(aliasList)
+
     if entry.metadata is None:
         entry.metadata = {"alias": alias}
     else:
-        entry.metadata["alias"] = alias
+        entry.metadata['alias'] = alias
     entry.save()
 
 
