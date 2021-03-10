@@ -192,6 +192,7 @@ class Command(BaseCommand):
             )
 
             # UpDating MetaData and parents relations
+            Variable.objects.all().update(metadata=None)
             metadata.updateByVariableTree()
             for entry in Variable.objects.all():
                 metadata.makeAlias(entry)

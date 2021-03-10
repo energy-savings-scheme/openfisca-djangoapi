@@ -93,7 +93,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    # "rest_framework.renderers.BrowsableAPIRenderer",
+    "rest_framework.renderers.BrowsableAPIRenderer",
     "rest_framework.renderers.JSONRenderer",
 )
 
