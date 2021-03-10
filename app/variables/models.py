@@ -99,9 +99,8 @@ class Variable(models.Model):
                 edge = (self.name, child.name)
                 edge_list.append(edge)
                 child.get_all_dependency(node_list, edge_list)
-                print(".")
+                # print(".")
 
-        else:
-            print('----------------')
+            # print('----------------')
 
         return dict(nodes=node_list, edges=edge_list)
