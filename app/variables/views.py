@@ -127,7 +127,7 @@ class VariableChildrenList(generics.RetrieveAPIView):
     lookup_url_kwarg = "variable_name"
 
 
-class VariableDependencyGraph():
+class VariableDependencyGraph:
     """
     # GET dependency network graph of a single Variable
 
@@ -140,9 +140,16 @@ class VariableDependencyGraph():
     - variable_name [str]: e.g. "/variables/<variable_name>/digraph
 
     """
-    var_id = 'F1_5_meets_installation_requirements'
-    my_var = Variable.objects.get(name=var_id)
-    dependencies = my_var.get_all_dependency(node_list=[], edge_list=[])
+
+    # The below section is causing errors, it is preventing Django command like "manage.py makemigrations"
+    # This is because this class is executed as soon as Django is launched
+    # Try wrapping all code in a function, e.g:
+    #   def __init__(self):
+    #       ... <code here...>
+
+    # var_id = 'F1_5_meets_installation_requirements'
+    # my_var = Variable.objects.get(name=var_id)
+    # dependencies = my_var.get_all_dependency(node_list=[], edge_list=[])
 
     def graph(node_list, edge_list):
         G = nx.DiGraph()
@@ -151,4 +158,4 @@ class VariableDependencyGraph():
         # print(G.nodes)
         # print(G.edges)
 
-    graph(dependencies['nodes'], dependencies['edges'])
+    # graph(dependencies['nodes'], dependencies['edges'])
