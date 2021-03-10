@@ -102,7 +102,8 @@ class Command(BaseCommand):
             )
 
             # Get variables from API
-            variables_data = requests.get(f"{settings.OPENFISCA_API_URL}/variables")
+            variables_data = requests.get(
+                f"{settings.OPENFISCA_API_URL}/variables")
             data = variables_data.json()
 
             # Check that the OpenFisca API returned a 200 response. If not, raise Exception
@@ -122,7 +123,8 @@ class Command(BaseCommand):
             num_created = 0
             num_already_exists = 0
 
-            self.stdout.write(self.style.SUCCESS("Adding Variables to database "))
+            self.stdout.write(self.style.SUCCESS(
+                "Adding Variables to database "))
 
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
@@ -142,7 +144,8 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             self.stdout.write(
-                self.style.SUCCESS("\nFetching Variable details from OpenFisca API ")
+                self.style.SUCCESS(
+                    "\nFetching Variable details from OpenFisca API ")
             )
 
             future = asyncio.ensure_future(run(variables_list, self))
@@ -182,7 +185,7 @@ class Command(BaseCommand):
                             content.find(f"'{variable_name}'") > 0
                         ):
                             obj.children.add(variable_obj)
-                
+
                 obj.save()
 
             self.stdout.write(
@@ -201,4 +204,3 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.ERROR(f"\nError creating Variable: {str(error)}")
             )
-
