@@ -191,7 +191,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Spectacular Swagger documentation settings
 SPECTACULAR_SETTINGS = {
     "TITLE": "OpenFisca-DjangoAPI Documentation",
-    "DESCRIPTION": """A database and Django webserver layer for serving OpenFisca rulesets.\n 
+    "DESCRIPTION": """A database and Django webserver layer for serving OpenFisca rulesets.\n
 What does it do?
 - ingests a OpenFisca ruleset into a SQL database, allowing for efficient/complex queries
 - provides useful Restful endpoints for frontend services to query ruleset relations
@@ -217,4 +217,5 @@ Who should use this?
 ###########################################
 
 # OpenFisca settings
-OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
+OPENFISCA_API_URL = env.str(
+    "OPENFISCA_API_URL", default="http://localhost:8001")

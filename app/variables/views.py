@@ -11,6 +11,10 @@ from variables.serializers import VariableListSerializer, VariableChildrenSerial
 from . import metadata
 
 
+# graph drawing
+import networkx as nx
+
+
 class VariablesList(generics.ListAPIView):
     """
     # LIST all Variables stored in the database
@@ -34,12 +38,6 @@ class VariablesList(generics.ListAPIView):
     serializer_class = VariableListSerializer
     # pagination_class = LargeResultsSetPagination
 
-    # ---update metadata: only need once after loading the data-----
-    # metadata.updateByVariableTree()
-    # for entry in Variable.objects.all():
-    #     metadata.makeAlias(entry)
-    # metadata.findAllParents()
-
     def get_queryset(self):
         query_set = Variable.objects.all()
         is_output = self.request.query_params.get("is_output", None)
@@ -48,12 +46,24 @@ class VariablesList(generics.ListAPIView):
         minorCat = self.request.query_params.get("minorcat", None)
 
         if is_input is not None:
-            query_set = query_set.annotate(
-                num_parents=Count("children")).filter(num_parents=0)
+            if is_input.lower() == "false":
+                query_set = query_set.annotate(num_parents=Count("children")).filter(
+                    num_parents__gt=0
+                )
+            else:
+                query_set = query_set.annotate(num_parents=Count("children")).filter(
+                    num_parents=0
+                )
 
         if is_output is not None:
-            query_set = query_set.annotate(
-                num_children=Count("parents")).filter(num_children=0)
+            if is_output.lower() == "false":
+                query_set = query_set.annotate(num_children=Count("parents")).filter(
+                    num_children__gt=0
+                )
+            else:
+                query_set = query_set.annotate(num_children=Count("parents")).filter(
+                    num_children=0
+                )
 
         if majorCat is not None:
             query_set = query_set.filter(metadata__majorCat=majorCat)
@@ -115,3 +125,30 @@ class VariableChildrenList(generics.RetrieveAPIView):
     serializer_class = VariableChildrenSerializer
     lookup_field = "name"
     lookup_url_kwarg = "variable_name"
+
+
+class VariableDependencyGraph():
+    """
+    # GET dependency network graph of a single Variable
+
+    # Returns
+    - html directed graph for all children of a variable
+
+
+    # URL parameter (required)
+    The following url parameter must be specified
+    - variable_name [str]: e.g. "/variables/<variable_name>/digraph
+
+    """
+    var_id = 'F1_5_meets_installation_requirements'
+    my_var = Variable.objects.get(name=var_id)
+    dependencies = my_var.get_all_dependency(node_list=[], edge_list=[])
+
+    def graph(node_list, edge_list):
+        G = nx.DiGraph()
+        G.add_nodes_from(node_list)
+        G.add_edges_from(edge_list)
+        # print(G.nodes)
+        # print(G.edges)
+
+    graph(dependencies['nodes'], dependencies['edges'])
