@@ -2,17 +2,17 @@ version: "3"
 
 services:
   # PostgreSQL
-  postgres:
-    image: postgres:11.4
-    hostname: postgres
-    ports:
-      - 5432:5432 # Bind host port 5432 to PostgreSQL port 5432
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-    environment:
-      - LC_ALL=C.UTF-8
-      - POSTGRES_USER=docker
-      - POSTGRES_PASSWORD=docker
+  # postgres:
+  #   image: postgres:11.4
+  #   hostname: postgres
+  #   ports:
+  #     - 5432:5432 # Bind host port 5432 to PostgreSQL port 5432
+  #   volumes:
+  #     - ./pgdata:/var/lib/postgresql/data
+  #   environment:
+  #     - LC_ALL=C.UTF-8
+  #     - POSTGRES_USER=docker
+  #     - POSTGRES_PASSWORD=docker
 
   # Django app
   app:
@@ -26,10 +26,10 @@ services:
       - 8001:8001
     volumes:
       - ./app:/usr/src/app
-    depends_on:
-      - postgres
-    links:
-      - postgres:postgres
+    # depends_on:
+    #   - postgres
+    # links:
+    #   - postgres:postgres
     environment:
       - DEBUG=True
       - PORT=8000
