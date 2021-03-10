@@ -48,12 +48,24 @@ class VariablesList(generics.ListAPIView):
         minorCat = self.request.query_params.get("minorcat", None)
 
         if is_input is not None:
-            query_set = query_set.annotate(
-                num_parents=Count("children")).filter(num_parents=0)
+            if is_input.lower() == "false":
+                query_set = query_set.annotate(num_parents=Count("children")).filter(
+                    num_parents__gt=0
+                )
+            else:
+                query_set = query_set.annotate(num_parents=Count("children")).filter(
+                    num_parents=0
+                )
 
         if is_output is not None:
-            query_set = query_set.annotate(
-                num_children=Count("parents")).filter(num_children=0)
+            if is_output.lower() == "false":
+                query_set = query_set.annotate(num_children=Count("parents")).filter(
+                    num_children__gt=0
+                )
+            else:
+                query_set = query_set.annotate(num_children=Count("parents")).filter(
+                    num_children=0
+                )
 
         if majorCat is not None:
             query_set = query_set.filter(metadata__majorCat=majorCat)
