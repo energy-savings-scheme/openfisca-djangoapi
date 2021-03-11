@@ -85,8 +85,9 @@ class Variable(models.Model):
         return f"<Variable: {str(self)}>"
 
     # This is not a good place for custom function! it causes makemigrations not work with empty db.
+    # --update: @property seems to make it ok to compile however not able to call somehow because of the arguments.
 
-    # def get_all_dependency(self, node_list, edge_list):
+    # def get_all_children(self, node_list, edge_list):
     #     """
     #     Returns all children nodes and directed edge for the
     #         maximum depth.
@@ -100,7 +101,7 @@ class Variable(models.Model):
     #         for child in self.children.all():
     #             edge = (self.name, child.name)
     #             edge_list.append(edge)
-    #             child.get_all_dependency(node_list, edge_list)
+    #             child.get_all_children(node_list, edge_list)
     #             # print(".")
 
     #         # print('----------------')
