@@ -23,7 +23,8 @@ class Variable(models.Model):
         ("Enum", "Enum"),
     ]
 
-    DEFINTION_PERIOD = [("MONTH", "MONTH"), ("YEAR", "YEAR"), ("ETERNITY", "ETERNITY")]
+    DEFINTION_PERIOD = [("MONTH", "MONTH"), ("YEAR", "YEAR"),
+                        ("ETERNITY", "ETERNITY")]
 
     name = models.CharField(
         max_length=255, null=False, blank=False, help_text="Variable name"
@@ -79,27 +80,3 @@ class Variable(models.Model):
 
     def __repr__(self):
         return f"<Variable: {str(self)}>"
-
-    # This is not a good place for custom function! it causes makemigrations not work with empty db.
-    # --update: @property seems to make it ok to compile however not able to call somehow because of the arguments.
-
-    # def get_all_children(self, node_list, edge_list):
-    #     """
-    #     Returns all children nodes and directed edge for the
-    #         maximum depth.
-    #     This is used for drawing network graph
-    #         for the children variables
-    #     """
-
-    #     node_list.append(self.name)
-
-    #     if (self.children.count() != 0):
-    #         for child in self.children.all():
-    #             edge = (self.name, child.name)
-    #             edge_list.append(edge)
-    #             child.get_all_children(node_list, edge_list)
-    #             # print(".")
-
-    #         # print('----------------')
-
-    #     return dict(nodes=node_list, edges=edge_list)

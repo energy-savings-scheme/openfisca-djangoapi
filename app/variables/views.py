@@ -9,10 +9,7 @@ from config.pagination import LargeResultsSetPagination
 from variables.models import Variable
 from variables.serializers import VariableListSerializer, VariableChildrenSerializer
 from . import metadata
-
-
-# graph drawing
-import networkx as nx
+from plots.network_graph import get_all_children, graph
 
 
 class VariablesList(generics.ListAPIView):
@@ -127,28 +124,20 @@ class VariableChildrenList(generics.RetrieveAPIView):
     lookup_url_kwarg = "variable_name"
 
 
-# class VariableDependencyGraph():
-#     """
-#     # GET dependency network graph of a single Variable
+class VariableDependencyGraph():
+    """
+    # GET dependency network graph of a single Variable
 
-#     # Returns
-#     - html directed graph for all children of a variable
+    # Returns
+    - html directed graph for all children of a variable
 
 
-#     # URL parameter (required)
-#     The following url parameter must be specified
-#     - variable_name [str]: e.g. "/variables/<variable_name>/digraph
+    # URL parameter (required)
+    The following url parameter must be specified
+    - variable_name [str]: e.g. "/variables/<variable_name>/digraph
 
-#     """
-#     var_id = 'F1_5_meets_installation_requirements'
-#     my_var = Variable.objects.get(name=var_id)
-#     dependencies = my_var.get_all_dependency(node_list=[], edge_list=[])
-
-#     def graph(node_list, edge_list):
-#         G = nx.DiGraph()
-#         G.add_nodes_from(node_list)
-#         G.add_edges_from(edge_list)
-#         print(G.nodes)
-#         print(G.edges)
-
-#     graph(dependencies['nodes'], dependencies['edges'])
+    """
+    var_id = 'F1_5_meets_installation_requirements'
+    # var_id = "office_maximum_electricity_consumption"
+    dependencies = get_all_children(var_id, node_list=[], edge_list=[])
+    graph(dependencies['nodes'], dependencies['edges'])
