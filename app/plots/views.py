@@ -1,20 +1,21 @@
-from . import plots
+from plots.plots import varIDBarChart
+from plots.network_graph import network_graph, test_graph
 from django.shortcuts import render
 
 
 def BarChart_id(request):
-    context = {'plot': plots.varIDBarChart('id')}
+    context = {'plot': varIDBarChart('id')}
     response = render(request, 'plots/barchart.html', context)
     return response
 
 
 def BarChart_alias(request):
-    context = {'plot': plots.varIDBarChart('alias')}
+    context = {'plot': varIDBarChart('alias')}
     response = render(request, 'plots/barchart.html', context)
     return response
 
 
 def Graph(request):
-    context = {'plot': plots.graph}
+    context = {'plot': network_graph}
     response = render(request, 'plots/barchart.html', context)
     return response

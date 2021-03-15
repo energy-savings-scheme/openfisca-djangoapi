@@ -1,5 +1,4 @@
 from django.urls import path
-
 from plots.views import BarChart_id, BarChart_alias, Graph
 
 urlpatterns = [
