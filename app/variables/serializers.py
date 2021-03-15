@@ -23,6 +23,7 @@ class VariableListSerializer(serializers.ModelSerializer):
             "default_value",
             "possible_values",
             "metadata",
+            "formula",
             "children",
             "parents",
         ]

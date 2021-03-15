@@ -23,8 +23,7 @@ class Variable(models.Model):
         ("Enum", "Enum"),
     ]
 
-    DEFINTION_PERIOD = [("MONTH", "MONTH"), ("YEAR", "YEAR"),
-                        ("ETERNITY", "ETERNITY")]
+    DEFINTION_PERIOD = [("MONTH", "MONTH"), ("YEAR", "YEAR"), ("ETERNITY", "ETERNITY")]
 
     name = models.CharField(
         max_length=255, null=False, blank=False, help_text="Variable name"
@@ -66,16 +65,13 @@ class Variable(models.Model):
         help_text="Default value of the variable.",
     )
     possible_values = models.JSONField(null=True, blank=True)
+    formula = models.TextField(null=True, blank=True)
     metadata = models.JSONField(null=True, blank=True)
     children = models.ManyToManyField(
-        "variables.Variable",
-        blank=True,
-        related_name="parent_set"
+        "variables.Variable", blank=True, related_name="parent_set"
     )
     parents = models.ManyToManyField(
-        "variables.Variable",
-        blank=True,
-        related_name="children_set"
+        "variables.Variable", blank=True, related_name="children_set"
     )
 
     def __str__(self):
