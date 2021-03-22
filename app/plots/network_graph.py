@@ -85,8 +85,9 @@ def test_graph():
 
 def graph(G):
 
-    node_list = G.nodes
-    edge_list = G.edges
+    node_list = list(G.nodes)
+    edge_list = list(G.edges)
+    print(G.nodes(data=True))
     # G = nx.DiGraph()
     # G.add_nodes_from(node_list, type=attribute_list)
     # G.add_edges_from(edge_list)
@@ -96,7 +97,9 @@ def graph(G):
     # planar or shell is good for small number of nodes
     # TODO: with multiplartitle_layout using subsets of (output, intermediatory, input)
 
-    pos = nx.spiral_layout(G)
+    # pos = nx.spiral_layout(G)
+    pos = nx.multipartite_layout(G, subset_key="subset", align='horizontal')
+    print(type(node_list))
 
     var_id = node_list[0]
     var_id_x, var_id_y = pos[var_id]
@@ -166,25 +169,26 @@ def graph(G):
 
 
 def multipartiteGraph(G):
-    print(G.nodes(data=True))
     pos = nx.multipartite_layout(G, subset_key="subset", align='horizontal')
     print(pos)
 
 
 def network_graph():
-    var_id = 'F1_5_meets_installation_requirements'
+    # var_id = 'F1_5_meets_installation_requirements'
     # var_id = "office_maximum_electricity_consumption"
-    # var_id = "number_of_certificates"
+    var_id = "number_of_certificates"
     G = nx.DiGraph()
     H = get_variable_graph(
         var_id, G)
     for node, varType in H.nodes(data=True):
-        if varType == 'input':
+        print(varType)
+        if varType['type'] == 'input':
             G.nodes[node]['subset'] = 0
-        elif varType == 'output':
+        elif varType['type'] == 'output':
             G.nodes[node]['subset'] = 2
-        else:
+        elif varType['type'] == 'intermediary':
             G.nodes[node]['subset'] = 1
-    print(H.nodes(data=True))
-    # return graph(H)
-    multipartiteGraph(H)
+        else:
+            G.nodes[node]['subset'] = -1
+    return graph(H)
+    # multipartiteGraph(H)
