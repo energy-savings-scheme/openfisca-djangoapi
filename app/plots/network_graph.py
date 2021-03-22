@@ -1,7 +1,5 @@
 from variables.models import Variable
 import networkx as nx
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import plotly.graph_objects as go
 from plotly.io import to_html
 import numpy as np
@@ -9,6 +7,9 @@ import numpy as np
 
 # TODO: save all children in cache
 # https://docs.djangoproject.com/en/3.1/ref/models/querysets/#prefetch-related
+
+Variable.objects.all().prefetch_related('children')
+
 
 def get_all_children(var_id, node_list, edge_list):
     """
@@ -110,8 +111,8 @@ def graph(node_list, edge_list):
 
     layout = go.Layout(
         title=f"{var_id}",
-        height=1000,
-        width=1000,
+        height=800,
+        width=800,
         showlegend=False,
         paper_bgcolor='#f7f6e7',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -129,8 +130,8 @@ def graph(node_list, edge_list):
 
 
 def network_graph():
-    # var_id = 'F1_5_meets_installation_requirements'
-    var_id = "office_maximum_electricity_consumption"
+    var_id = 'F1_5_meets_installation_requirements'
+    # var_id = "office_maximum_electricity_consumption"
     # var_id = "number_of_certificates"
     dependencies = get_all_children(var_id, node_list=[], edge_list=[])
     return graph(dependencies['nodes'], dependencies['edges'])

@@ -102,6 +102,32 @@ def makeAlias(entry):
     entry.save()
 
 
+def variableType(entry):
+    print(entry.parents.count())
+    print(entry.children.count())
+    if (entry.parents.count() == 0 and entry.children.count() > 0):
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'output'}
+        else:
+            entry.metadata['variable-type'] = 'output'
+    elif (entry.children.count() == 0 and entry.parents.count() > 0):
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'input'}
+        else:
+            entry.metadata['variable-type'] = 'input'
+    elif (entry.children.count() == 0 and entry.parents.count() == 0):
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'orphan'}
+        else:
+            entry.metadata['variable-type'] = 'orphan'
+    else:
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'intermediary'}
+        else:
+            entry.metadata['variable-type'] = 'intermediary'
+    entry.save()
+
+
 def findAllParents():
     for entry in Variable.objects.all():
         entry.parents.set(entry.parent_set.all())
