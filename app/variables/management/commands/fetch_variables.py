@@ -196,11 +196,12 @@ class Command(BaseCommand):
             )
 
             # UpDating MetaData and parents relations
+            metadata.findAllParents()
             Variable.objects.all().update(metadata=None)
             metadata.updateByVariableTree()
             for entry in Variable.objects.all():
                 metadata.makeAlias(entry)
-            metadata.findAllParents()
+                metadata.variableType(entry)
 
         except CommandError as error:
             self.stdout.write(

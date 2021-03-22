@@ -3,6 +3,8 @@ import networkx as nx
 import plotly.graph_objects as go
 from plotly.io import to_html
 import numpy as np
+from networkx.utils import pairwise
+import itertools
 
 
 # TODO: save all children in cache
@@ -11,7 +13,33 @@ import numpy as np
 Variable.objects.all().prefetch_related('children')
 
 
-def get_all_children(var_id, node_list, edge_list):
+def get_variable_graph(var_id, G):
+    """
+    Returns all children nodes and directed edge for the
+        maximum depth.
+    This is used for drawing network graph
+        for the children variables
+    """
+
+    try:
+        variable = Variable.objects.get(name=var_id)
+        var_type = variable.metadata['variable-type']
+        G.add_node(var_id, type=var_type)
+
+        if (variable.children.count() != 0):
+            for child in variable.children.all():
+                G.add_edge(var_id, child.name)
+                get_variable_graph(child.name, G)
+                print(".")
+
+        return G
+
+    except Variable.DoesNotExist:
+        print(f"{var_id} does not exist")
+        return None
+
+
+def get_all_children(var_id, node_list, edge_list, attribute_list):
     """
     Returns all children nodes and directed edge for the
         maximum depth.
@@ -22,17 +50,22 @@ def get_all_children(var_id, node_list, edge_list):
     try:
         variable = Variable.objects.get(name=var_id)
         node_list.append(var_id)
+        attribute_list.append(variable.metadata['variable-type'])
 
         if (variable.children.count() != 0):
             for child in variable.children.all():
                 edge = (var_id, child.name)
                 edge_list.append(edge)
-                get_all_children(child.name, node_list, edge_list)
+                get_all_children(child.name, node_list,
+                                 edge_list, attribute_list)
                 print(".")
 
         print('----------------')
 
-        return dict(nodes=node_list, edges=edge_list)
+        print(attribute_list)
+        print(node_list)
+
+        return dict(nodes=node_list, edges=edge_list, attributes=attribute_list)
 
     except Variable.DoesNotExist:
         print(f"{var_id} does not exist")
@@ -50,11 +83,14 @@ def test_graph():
     return plot_div
 
 
-def graph(node_list, edge_list):
+def graph(G):
 
-    G = nx.DiGraph()
-    G.add_nodes_from(node_list)
-    G.add_edges_from(edge_list)
+    node_list = G.nodes
+    edge_list = G.edges
+    # G = nx.DiGraph()
+    # G.add_nodes_from(node_list, type=attribute_list)
+    # G.add_edges_from(edge_list)
+    # print(G.nodes(data=True))
     seed = 13425
     # spring_layout or spiral_layout is good for lots of nodes
     # planar or shell is good for small number of nodes
@@ -129,9 +165,19 @@ def graph(node_list, edge_list):
     return plot_div
 
 
+def multipartiteGraph(G):
+    print(G.nodes(data=True))
+    # pos = nx.multipartite_layout(G, subset_key="type", align='horizontal')
+    # print(pos)
+
+
 def network_graph():
     var_id = 'F1_5_meets_installation_requirements'
     # var_id = "office_maximum_electricity_consumption"
     # var_id = "number_of_certificates"
-    dependencies = get_all_children(var_id, node_list=[], edge_list=[])
-    return graph(dependencies['nodes'], dependencies['edges'])
+    G = nx.DiGraph()
+    H = get_variable_graph(
+        var_id, G)
+    print(H.nodes(data=True))
+    # return graph(H)
+    multipartiteGraph(H)

@@ -35,9 +35,6 @@ class VariablesList(generics.ListAPIView):
     serializer_class = VariableListSerializer
     # pagination_class = LargeResultsSetPagination
 
-    for entry in Variable.objects.all():
-        metadata.variableType(entry)
-
     def get_queryset(self):
         query_set = Variable.objects.all()
         is_output = self.request.query_params.get("is_output", None)
@@ -141,7 +138,7 @@ class VariableDependencyGraph():
 
     """
     # TODO: need to work on this
-    var_id = 'F1_5_meets_installation_requirements'
+    # var_id = 'F1_5_meets_installation_requirements'
     # var_id = "office_maximum_electricity_consumption"
-    dependencies = get_all_children(var_id, node_list=[], edge_list=[])
-    graph(dependencies['nodes'], dependencies['edges'])
+    # dependencies = get_all_children(var_id, node_list=[], edge_list=[])
+    # graph(dependencies['nodes'], dependencies['edges'])
