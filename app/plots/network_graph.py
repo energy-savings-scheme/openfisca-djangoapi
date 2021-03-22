@@ -167,8 +167,8 @@ def graph(G):
 
 def multipartiteGraph(G):
     print(G.nodes(data=True))
-    # pos = nx.multipartite_layout(G, subset_key="type", align='horizontal')
-    # print(pos)
+    pos = nx.multipartite_layout(G, subset_key="subset", align='horizontal')
+    print(pos)
 
 
 def network_graph():
@@ -178,6 +178,13 @@ def network_graph():
     G = nx.DiGraph()
     H = get_variable_graph(
         var_id, G)
+    for node, varType in H.nodes(data=True):
+        if varType == 'input':
+            G.nodes[node]['subset'] = 0
+        elif varType == 'output':
+            G.nodes[node]['subset'] = 2
+        else:
+            G.nodes[node]['subset'] = 1
     print(H.nodes(data=True))
     # return graph(H)
     multipartiteGraph(H)
