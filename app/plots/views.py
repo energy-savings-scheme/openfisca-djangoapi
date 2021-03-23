@@ -1,5 +1,5 @@
 from plots.plots import varIDBarChart
-from plots.network_graph import network_graph, test_graph
+from plots.network_graph import network_graph
 from django.shortcuts import render
 
 

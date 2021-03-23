@@ -9,7 +9,6 @@ from config.pagination import LargeResultsSetPagination
 from variables.models import Variable
 from variables.serializers import VariableListSerializer, VariableChildrenSerializer
 from . import metadata
-from plots.network_graph import get_all_children, graph
 
 
 class VariablesList(generics.ListAPIView):
@@ -34,6 +33,9 @@ class VariablesList(generics.ListAPIView):
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
     # pagination_class = LargeResultsSetPagination
+
+    # for entry in Variable.objects.all():
+    #     metadata.variableType(entry)
 
     def get_queryset(self):
         query_set = Variable.objects.all()

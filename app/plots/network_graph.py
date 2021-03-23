@@ -4,12 +4,14 @@ import plotly.graph_objects as go
 from plotly.io import to_html
 import numpy as np
 from networkx.utils import pairwise
+from networkx.algorithms.shortest_paths.unweighted import single_source_shortest_path_length
 import itertools
 
 
-# TODO: save all children in cache
-# https://docs.djangoproject.com/en/3.1/ref/models/querysets/#prefetch-related
+# TODO: just a thought: can I pull all variables into a graph instead. Is it even possible? There would be clusters, which could be the automatic categories. i.e. we categorise by dependencies instead of guessing through var names and description.
 
+
+# TODO: check if I am using it the right way, particularly trying to get variable data
 Variable.objects.all().prefetch_related('children')
 
 
@@ -30,7 +32,6 @@ def get_variable_graph(var_id, G):
             for child in variable.children.all():
                 G.add_edge(var_id, child.name)
                 get_variable_graph(child.name, G)
-                print(".")
 
         return G
 
@@ -39,69 +40,59 @@ def get_variable_graph(var_id, G):
         return None
 
 
-def get_all_children(var_id, node_list, edge_list, attribute_list):
-    """
-    Returns all children nodes and directed edge for the
-        maximum depth.
-    This is used for drawing network graph
-        for the children variables
-    """
+def display_pos(G, layout='shortest'):
+    ''' Display Position of the Nodes:
+    # spiral
 
-    try:
-        variable = Variable.objects.get(name=var_id)
-        node_list.append(var_id)
-        attribute_list.append(variable.metadata['variable-type'])
+    # 1. general layout that works well for lots of nodes
+     # pos = nx.spiral_layout(G)
 
-        if (variable.children.count() != 0):
-            for child in variable.children.all():
-                edge = (var_id, child.name)
-                edge_list.append(edge)
-                get_all_children(child.name, node_list,
-                                 edge_list, attribute_list)
-                print(".")
-
-        print('----------------')
-
-        print(attribute_list)
-        print(node_list)
-
-        return dict(nodes=node_list, edges=edge_list, attributes=attribute_list)
-
-    except Variable.DoesNotExist:
-        print(f"{var_id} does not exist")
-        return None
+    # "variable-type":
+        multiplartitle_layout using subsets of (output, intermediatory, input). it works well for small number of nodes, but not for a bigger set of nodes
 
 
-def test_graph():
-    t = np.linspace(0, 10, 100)
-    y = np.sin(t)
-    test_trace = go.Scatter(
-        x=t, y=y, mode="markers"
-    )
-    fig = go.Figure(data=[test_trace])
-    plot_div = fig.to_html(full_html=False)
-    return plot_div
+    # "shortest" by default
+        multiplartitle_layout using shortest distance to the source.
+    '''
+    if layout == 'shortest':
+        var_id = list(G.nodes)[0]
+        shortest_length = single_source_shortest_path_length(G, var_id)
+
+        for node in shortest_length.keys():
+            G.nodes[node]['shortest'] = shortest_length[node]
+
+        pos = nx.multipartite_layout(
+            G, subset_key="shortest", align='horizontal')
+
+    elif layout == "variable-type":
+        for node, varType in G.nodes(data=True):
+            if varType['type'] == 'input':
+                G.nodes[node]['subset'] = 0
+            elif varType['type'] == 'output':
+                G.nodes[node]['subset'] = 2
+            elif varType['type'] == 'intermediary':
+                G.nodes[node]['subset'] = 1
+            else:
+                G.nodes[node]['subset'] = -1
+
+        pos = nx.multipartite_layout(
+            G, subset_key="subset", align='horizontal')
+    else:
+        pos = nx.spiral_layout(G)
+
+    return pos
 
 
 def graph(G):
 
     node_list = list(G.nodes)
     edge_list = list(G.edges)
-    print(G.nodes(data=True))
-    # G = nx.DiGraph()
-    # G.add_nodes_from(node_list, type=attribute_list)
-    # G.add_edges_from(edge_list)
-    # print(G.nodes(data=True))
     seed = 13425
-    # spring_layout or spiral_layout is good for lots of nodes
-    # planar or shell is good for small number of nodes
-    # TODO: with multiplartitle_layout using subsets of (output, intermediatory, input)
 
-    # pos = nx.spiral_layout(G)
-    pos = nx.multipartite_layout(G, subset_key="subset", align='horizontal')
-    print(type(node_list))
+    # TODO: color by type of nodes (output, inter, input)
+    pos = display_pos(G)
+    var_id = list(G.nodes)[0]
 
-    var_id = node_list[0]
     var_id_x, var_id_y = pos[var_id]
     var_id_trace = go.Scatter(
         x=[var_id_x], y=[var_id_y],
@@ -160,35 +151,24 @@ def graph(G):
 
     )
 
-    # TODO: print out the number of nodes present
-    # TODO: node size corresponds to adjacency size
+    # TODO: print out some general state of a network: number of nodes, number of edges,
+    # TODO: node color/size corresponds to adjacency size
+    # TODO: show direction (through color of edges?)
 
     fig = go.Figure(data=[edge_trace, node_trace, var_id_trace], layout=layout)
     plot_div = fig.to_html(full_html=False)
     return plot_div
 
 
-def multipartiteGraph(G):
-    pos = nx.multipartite_layout(G, subset_key="subset", align='horizontal')
-    print(pos)
-
-
 def network_graph():
-    # var_id = 'F1_5_meets_installation_requirements'
+    var_id = 'F1_5_meets_installation_requirements'
     # var_id = "office_maximum_electricity_consumption"
-    var_id = "number_of_certificates"
+    # var_id = "number_of_certificates"
+    # var_id = "number_of_apartments"
     G = nx.DiGraph()
     H = get_variable_graph(
         var_id, G)
-    for node, varType in H.nodes(data=True):
-        print(varType)
-        if varType['type'] == 'input':
-            G.nodes[node]['subset'] = 0
-        elif varType['type'] == 'output':
-            G.nodes[node]['subset'] = 2
-        elif varType['type'] == 'intermediary':
-            G.nodes[node]['subset'] = 1
-        else:
-            G.nodes[node]['subset'] = -1
+
+    print(H.edges(data=True))
+
     return graph(H)
-    # multipartiteGraph(H)
