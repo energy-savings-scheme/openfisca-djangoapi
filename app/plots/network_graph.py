@@ -138,6 +138,8 @@ def graph(G):
         line=dict(width=1, color='#888'),
         hoverinfo='none',
     )
+    for x, y, edge in zip(edge_x, edge_y, edge_list):
+        print(edge, x, y)
 
     layout = go.Layout(
         title=f"{var_id}",
