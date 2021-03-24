@@ -67,9 +67,9 @@ def display_pos(G, layout='shortest'):
     elif layout == "variable-type":
         for node, varType in G.nodes(data=True):
             if varType['type'] == 'input':
-                G.nodes[node]['subset'] = 0
-            elif varType['type'] == 'output':
                 G.nodes[node]['subset'] = 2
+            elif varType['type'] == 'output':
+                G.nodes[node]['subset'] = 0
             elif varType['type'] == 'intermediary':
                 G.nodes[node]['subset'] = 1
             else:
@@ -77,20 +77,22 @@ def display_pos(G, layout='shortest'):
 
         pos = nx.multipartite_layout(
             G, subset_key="subset", align='horizontal')
+    elif layout == "planar":
+        pos = nx.planar_layout(G)
     else:
         pos = nx.spiral_layout(G)
 
     return pos
 
 
-def graph(G):
+def graph(G, layout="shortest"):
 
     node_list = list(G.nodes)
     edge_list = list(G.edges)
     seed = 13425
 
     # TODO: color by type of nodes (output, inter, input)
-    pos = display_pos(G)
+    pos = display_pos(G, layout)
     var_id = list(G.nodes)[0]
 
     var_id_x, var_id_y = pos[var_id]
@@ -138,8 +140,6 @@ def graph(G):
         line=dict(width=1, color='#888'),
         hoverinfo='none',
     )
-    for x, y, edge in zip(edge_x, edge_y, edge_list):
-        print(edge, x, y)
 
     layout = go.Layout(
         title=f"{var_id}",
@@ -163,14 +163,16 @@ def graph(G):
 
 
 def network_graph():
-    var_id = 'F1_5_meets_installation_requirements'
+    # var_id = 'F1_5_meets_installation_requirements'
     # var_id = "office_maximum_electricity_consumption"
     # var_id = "number_of_certificates"
-    # var_id = "number_of_apartments"
+    var_id = "PDRS__Air_Conditioner__peak_demand_savings"
+    # var_id = "PDRS__ROOA__peak_demand_savings"
+
     G = nx.DiGraph()
     H = get_variable_graph(
         var_id, G)
 
-    print(H.edges(data=True))
+    # print(H.edges(data=True))
 
-    return graph(H)
+    return graph(H, 'variable-type')

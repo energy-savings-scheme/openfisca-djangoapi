@@ -54,8 +54,13 @@ variableTree = {
         "F14",
         "F15",
     ],
+    'PDRS': [
+        "Air_Conditioner", "ROOA"
+    ]
 }
 
+
+# TODO: how to preserve the metadata from openfisca?
 
 def update_categories(majorCat, minorCat):
     entries = Variable.objects.select_for_update().filter(
@@ -102,9 +107,17 @@ def makeAlias(entry):
     entry.save()
 
 
+def PDRS_makeAlias(entry):
+    alias0 = entry.name.split("__")[-1]
+    alias = " ".join(alias0.split("_")).title()
+    if entry.metadata is None:
+        entry.metadata = {"alias": alias}
+    else:
+        entry.metadata['alias'] = alias
+    entry.save()
+
+
 def variableType(entry):
-    print(entry.parents.count())
-    print(entry.children.count())
     if (entry.parents.count() == 0 and entry.children.count() > 0):
         if entry.metadata is None:
             entry.metadata = {"variable-type": 'output'}
@@ -130,5 +143,12 @@ def variableType(entry):
 
 def findAllParents():
     for entry in Variable.objects.all():
+        # TODO: only update parents when it is absent. (with value None?)
         entry.parents.set(entry.parent_set.all())
         entry.save()
+
+    # update PDRS rules only
+    # for entry in Variable.objects.filter(name__icontains='pdrs'):
+    #     print(entry.name)
+    #     entry.parents.set(entry.parent_set.all())
+    #     entry.save()

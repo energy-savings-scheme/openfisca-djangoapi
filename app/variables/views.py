@@ -24,7 +24,7 @@ class VariablesList(generics.ListAPIView):
     - is_output [bool]: e.g. "/variables?is_output=true"
     - is_input [bool]: e.g. "/variables?is_input=true"
     - majorcat [str]: e.g "/variables?majorcat=E"
-    - minorcat [str]: e.g "/variables?majorcat=E1"
+    - minorcat [str]: e.g "/variables?minorcat=E1"
 
     Multiple queries can be combined with "&" (for example: "/variables?search=abc&is_final=true")
 
@@ -33,9 +33,6 @@ class VariablesList(generics.ListAPIView):
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
     # pagination_class = LargeResultsSetPagination
-
-    # for entry in Variable.objects.all():
-    #     metadata.variableType(entry)
 
     def get_queryset(self):
         query_set = Variable.objects.all()
