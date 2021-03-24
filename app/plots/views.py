@@ -16,6 +16,6 @@ def BarChart_alias(request):
 
 
 def Graph(request):
-    context = {'plot': network_graph}
+    context = {'plot': network_graph()}
     response = render(request, 'plots/barchart.html', context)
     return response

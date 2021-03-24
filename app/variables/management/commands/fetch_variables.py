@@ -204,8 +204,8 @@ class Command(BaseCommand):
                 metadata.variableType(entry)
 
             # update PDRS rules only: for alias
-            for entry in Variable.objects.filter(name__icontains='pdrs'):
-                metadata.PDRS_makeAlias(entry)
+            # for entry in Variable.objects.filter(name__icontains='pdrs'):
+            #     metadata.PDRS_makeAlias(entry)
 
         except CommandError as error:
             self.stdout.write(

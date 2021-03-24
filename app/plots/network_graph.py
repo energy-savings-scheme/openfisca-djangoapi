@@ -26,7 +26,8 @@ def get_variable_graph(var_id, G):
     try:
         variable = Variable.objects.get(name=var_id)
         var_type = variable.metadata['variable-type']
-        G.add_node(var_id, type=var_type)
+        alias = variable.metadata['alias']
+        G.add_node(var_id, type=var_type, alias=alias)
 
         if (variable.children.count() != 0):
             for child in variable.children.all():
@@ -85,15 +86,12 @@ def display_pos(G, layout='shortest'):
     return pos
 
 
-def graph(G, layout="shortest"):
+def graph(var_id, G, layout="shortest"):
 
     node_list = list(G.nodes)
     edge_list = list(G.edges)
-    seed = 13425
 
-    # TODO: color by type of nodes (output, inter, input)
     pos = display_pos(G, layout)
-    var_id = list(G.nodes)[0]
 
     var_id_x, var_id_y = pos[var_id]
     var_id_trace = go.Scatter(
@@ -107,9 +105,24 @@ def graph(G, layout="shortest"):
     node_x = []
     node_y = []
     node_name = []
+    node_color = []
+    node_size = []
+    node_symbol = []
+    for node, data in G.nodes(data=True):
+        node_name.append(data['alias'])
+        if data['type'] == 'input':
+            node_color.append('black')
+            node_size.append(20)
+            node_symbol.append('diamond')
+        elif data['type'] == 'output':
+            node_color.append('#fb743e')
+            node_size.append(20)
+            node_symbol.append('square')
+        else:
+            node_color.append('#8ac4d0')
+            node_size.append(20)
+            node_symbol.append('circle')
 
-    for node in G.nodes:
-        node_name.append(node)
         x0, y0 = pos[node]
         node_x.append(x0)
         node_y.append(y0)
@@ -120,7 +133,7 @@ def graph(G, layout="shortest"):
         mode='markers',
         hoverinfo='text',
         text=node_name,
-        marker=dict(size=16, color='#8ac4d0')
+        marker=dict(size=node_size, color=node_color, symbol=node_symbol),
     )
 
     edge_x = []
@@ -141,8 +154,13 @@ def graph(G, layout="shortest"):
         hoverinfo='none',
     )
 
+    # summary info on the network
+    mainNode = G.nodes[var_id]['alias']
+    node_size = G.number_of_nodes()
+    edge_size = G.number_of_edges()
+
     layout = go.Layout(
-        title=f"{var_id}",
+        title=f'{mainNode}\n' f'({node_size} nodes & {edge_size} edges)',
         height=800,
         width=800,
         showlegend=False,
@@ -150,7 +168,6 @@ def graph(G, layout="shortest"):
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-
     )
 
     # TODO: print out some general state of a network: number of nodes, number of edges,
@@ -172,7 +189,7 @@ def network_graph():
     G = nx.DiGraph()
     H = get_variable_graph(
         var_id, G)
+    print(H.number_of_nodes())
+    print(H.number_of_edges())
 
-    # print(H.edges(data=True))
-
-    return graph(H, 'variable-type')
+    return graph(var_id, H, 'variable-type')
