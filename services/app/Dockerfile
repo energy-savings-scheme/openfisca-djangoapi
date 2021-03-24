@@ -5,6 +5,7 @@ FROM python:3.7.4-alpine3.10
 
 # Ensure that Python outputs everything that's printed inside
 # the application rather than buffering it.
+RUN pip install --upgrade pip setuptools wheel
 ENV PYTHONUNBUFFERED 1
 
 # Include codebase in the PYTHONPATH
@@ -26,7 +27,7 @@ RUN apk add --no-cache --virtual .build-deps \
 # Copy deployment files
 # Adding requirements.txt & uwsgi.ini
 COPY services/app/requirements.txt services/app/uwsgi.ini /deployment/
-RUN pip install -r /deployment/requirements.txt
+RUN pip install -r /deployment/requirements.txt --
 
 # Add the entrypoint.sh
 COPY services/app/entrypoint.sh /usr/local/bin/entrypoint.sh
