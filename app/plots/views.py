@@ -19,3 +19,21 @@ def Graph(request):
     context = {'plot': network_graph()}
     response = render(request, 'plots/barchart.html', context)
     return response
+
+
+def NetworkGraph_shortest(request, var_id):
+    """
+    # GET dependency network graph of a single Variable
+
+    # Returns
+    - html directed graph for all children of a variable
+        with the shortest path length as layout algorithm
+
+    # URL parameter (required)
+    The following url parameter must be specified
+    - variable_name [str]: e.g. "/shortest/<variable_name>
+
+    """
+    context = {'plot': network_graph(var_id, layout='shortest')}
+    response = render(request, 'plots/barchart.html', context)
+    return response

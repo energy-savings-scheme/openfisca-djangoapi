@@ -121,23 +121,3 @@ class VariableChildrenList(generics.RetrieveAPIView):
     serializer_class = VariableChildrenSerializer
     lookup_field = "name"
     lookup_url_kwarg = "variable_name"
-
-
-class VariableDependencyGraph():
-    """
-    # GET dependency network graph of a single Variable
-
-    # Returns
-    - html directed graph for all children of a variable
-
-
-    # URL parameter (required)
-    The following url parameter must be specified
-    - variable_name [str]: e.g. "/variables/<variable_name>/digraph
-
-    """
-    # TODO: need to work on this
-    # var_id = 'F1_5_meets_installation_requirements'
-    # var_id = "office_maximum_electricity_consumption"
-    # dependencies = get_all_children(var_id, node_list=[], edge_list=[])
-    # graph(dependencies['nodes'], dependencies['edges'])

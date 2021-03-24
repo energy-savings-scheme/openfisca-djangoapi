@@ -99,7 +99,7 @@ def graph(var_id, G, layout="shortest"):
         mode='markers',
         hoverinfo='text',
         text=var_id,
-        marker=dict(size=16, color='#fb743e', symbol='square')
+        marker=dict(size=25, color='#fb743e', symbol='square')
     )
 
     node_x = []
@@ -170,8 +170,6 @@ def graph(var_id, G, layout="shortest"):
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
     )
 
-    # TODO: print out some general state of a network: number of nodes, number of edges,
-    # TODO: node color/size corresponds to adjacency size
     # TODO: show direction (through color of edges?)
 
     fig = go.Figure(data=[edge_trace, node_trace, var_id_trace], layout=layout)
@@ -179,17 +177,15 @@ def graph(var_id, G, layout="shortest"):
     return plot_div
 
 
-def network_graph():
+def network_graph(var_id, layout):
     # var_id = 'F1_5_meets_installation_requirements'
     # var_id = "office_maximum_electricity_consumption"
     # var_id = "number_of_certificates"
-    var_id = "PDRS__Air_Conditioner__peak_demand_savings"
+    # var_id = "PDRS__Air_Conditioner__peak_demand_savings"
     # var_id = "PDRS__ROOA__peak_demand_savings"
 
     G = nx.DiGraph()
     H = get_variable_graph(
         var_id, G)
-    print(H.number_of_nodes())
-    print(H.number_of_edges())
 
-    return graph(var_id, H, 'variable-type')
+    return graph(var_id, H, layout)
