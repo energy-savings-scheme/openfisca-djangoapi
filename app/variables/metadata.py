@@ -1,7 +1,8 @@
 import re
 from variables.models import Variable
 from django.db.models import Count, Q
-
+from plots.network_graph import get_variable_graph
+import networkx as nx
 
 variableTree = {
     "nabers": ["office", "apartment"],
@@ -152,3 +153,19 @@ def findAllParents():
     #     print(entry.name)
     #     entry.parents.set(entry.parent_set.all())
     #     entry.save()
+
+
+def get_input_offsprings(entry):
+    input_offsprings = []
+    G = nx.DiGraph()
+    H = get_variable_graph(
+        entry.name, G)
+    for node, nodeAttr in H.nodes(data=True):
+        if nodeAttr['type'] == 'input':
+            input_offsprings.append(node)
+
+    if entry.metadata is None:
+        entry.metadata = {"input_offspring": input_offsprings}
+    else:
+        entry.metadata['input_offspring'] = input_offsprings
+    entry.save()
