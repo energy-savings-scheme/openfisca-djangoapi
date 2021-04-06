@@ -1,3 +1,5 @@
+import distutils.util
+
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
 
@@ -8,7 +10,7 @@ class VariableListSerializer(serializers.ModelSerializer):
     entity = serializers.StringRelatedField()
     children = serializers.StringRelatedField(many=True)
     parents = serializers.StringRelatedField(many=True)
-
+    default_value = serializers.SerializerMethodField()
     # children = serializers.StringRelatedField(source="get_children", many=True)
     # parents = serializers.StringRelatedField(source="get_parents", many=True)
 
@@ -28,6 +30,18 @@ class VariableListSerializer(serializers.ModelSerializer):
             "parents",
         ]
         depth = 0
+
+    def get_default_value(self, obj):
+        if obj.value_type == "Int":
+            return int(obj.default_value)
+
+        if obj.value_type == "Float":
+            return float(obj.default_value)
+
+        if obj.value_type == "Boolean":
+            return bool(distutils.util.strtobool(obj.default_value))
+
+        return obj.default_value
 
 
 class VariableChildrenSerializer(serializers.ModelSerializer):
