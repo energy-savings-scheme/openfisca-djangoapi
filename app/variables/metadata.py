@@ -54,8 +54,13 @@ variableTree = {
         "F14",
         "F15",
     ],
+    'PDRS': [
+        "Air_Conditioner", "ROOA"
+    ]
 }
 
+
+# TODO: how to preserve the metadata from openfisca?
 
 def update_categories(majorCat, minorCat):
     entries = Variable.objects.select_for_update().filter(
@@ -102,7 +107,48 @@ def makeAlias(entry):
     entry.save()
 
 
+def PDRS_makeAlias(entry):
+    alias0 = entry.name.split("__")[-1]
+    alias = " ".join(alias0.split("_")).title()
+    if entry.metadata is None:
+        entry.metadata = {"alias": alias}
+    else:
+        entry.metadata['alias'] = alias
+    entry.save()
+
+
+def variableType(entry):
+    if (entry.parents.count() == 0 and entry.children.count() > 0):
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'output'}
+        else:
+            entry.metadata['variable-type'] = 'output'
+    elif (entry.children.count() == 0 and entry.parents.count() > 0):
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'input'}
+        else:
+            entry.metadata['variable-type'] = 'input'
+    elif (entry.children.count() == 0 and entry.parents.count() == 0):
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'orphan'}
+        else:
+            entry.metadata['variable-type'] = 'orphan'
+    else:
+        if entry.metadata is None:
+            entry.metadata = {"variable-type": 'intermediary'}
+        else:
+            entry.metadata['variable-type'] = 'intermediary'
+    entry.save()
+
+
 def findAllParents():
     for entry in Variable.objects.all():
+        # TODO: only update parents when it is absent. (with value None?)
         entry.parents.set(entry.parent_set.all())
         entry.save()
+
+    # update PDRS rules only
+    # for entry in Variable.objects.filter(name__icontains='pdrs'):
+    #     print(entry.name)
+    #     entry.parents.set(entry.parent_set.all())
+    #     entry.save()

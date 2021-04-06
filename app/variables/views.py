@@ -11,10 +11,6 @@ from variables.serializers import VariableListSerializer, VariableChildrenSerial
 from . import metadata
 
 
-# graph drawing
-import networkx as nx
-
-
 class VariablesList(generics.ListAPIView):
     """
     # LIST all Variables stored in the database
@@ -28,7 +24,7 @@ class VariablesList(generics.ListAPIView):
     - is_output [bool]: e.g. "/variables?is_output=true"
     - is_input [bool]: e.g. "/variables?is_input=true"
     - majorcat [str]: e.g "/variables?majorcat=E"
-    - minorcat [str]: e.g "/variables?majorcat=E1"
+    - minorcat [str]: e.g "/variables?minorcat=E1"
 
     Multiple queries can be combined with "&" (for example: "/variables?search=abc&is_final=true")
 
@@ -125,30 +121,3 @@ class VariableChildrenList(generics.RetrieveAPIView):
     serializer_class = VariableChildrenSerializer
     lookup_field = "name"
     lookup_url_kwarg = "variable_name"
-
-
-# class VariableDependencyGraph():
-#     """
-#     # GET dependency network graph of a single Variable
-
-#     # Returns
-#     - html directed graph for all children of a variable
-
-
-#     # URL parameter (required)
-#     The following url parameter must be specified
-#     - variable_name [str]: e.g. "/variables/<variable_name>/digraph
-
-#     """
-#     var_id = 'F1_5_meets_installation_requirements'
-#     my_var = Variable.objects.get(name=var_id)
-#     dependencies = my_var.get_all_dependency(node_list=[], edge_list=[])
-
-#     def graph(node_list, edge_list):
-#         G = nx.DiGraph()
-#         G.add_nodes_from(node_list)
-#         G.add_edges_from(edge_list)
-#         print(G.nodes)
-#         print(G.edges)
-
-#     graph(dependencies['nodes'], dependencies['edges'])

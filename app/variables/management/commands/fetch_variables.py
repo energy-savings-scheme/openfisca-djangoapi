@@ -102,7 +102,8 @@ class Command(BaseCommand):
             )
 
             # Get variables from API
-            variables_data = requests.get(f"{settings.OPENFISCA_API_URL}/variables")
+            variables_data = requests.get(
+                f"{settings.OPENFISCA_API_URL}/variables")
             data = variables_data.json()
 
             # Check that the OpenFisca API returned a 200 response. If not, raise Exception
@@ -122,12 +123,14 @@ class Command(BaseCommand):
             num_created = 0
             num_already_exists = 0
 
-            self.stdout.write(self.style.SUCCESS("Adding Variables to database "))
+            self.stdout.write(self.style.SUCCESS(
+                "Adding Variables to database "))
 
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
-                obj, created = Variable.objects.get_or_create(name=variable["name"])
+                obj, created = Variable.objects.get_or_create(
+                    name=variable["name"])
 
                 # Write to terminal to show progress
                 self.stdout.write(self.style.SUCCESS("."))
@@ -141,7 +144,8 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             self.stdout.write(
-                self.style.SUCCESS("\nFetching Variable details from OpenFisca API ")
+                self.style.SUCCESS(
+                    "\nFetching Variable details from OpenFisca API ")
             )
 
             future = asyncio.ensure_future(run(variables_list, self))
@@ -192,11 +196,16 @@ class Command(BaseCommand):
             )
 
             # UpDating MetaData and parents relations
+            metadata.findAllParents()
             Variable.objects.all().update(metadata=None)
             metadata.updateByVariableTree()
             for entry in Variable.objects.all():
                 metadata.makeAlias(entry)
-            metadata.findAllParents()
+                metadata.variableType(entry)
+
+            # update PDRS rules only: for alias
+            # for entry in Variable.objects.filter(name__icontains='pdrs'):
+            #     metadata.PDRS_makeAlias(entry)
 
         except CommandError as error:
             self.stdout.write(
