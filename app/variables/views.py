@@ -32,6 +32,7 @@ class VariablesList(generics.ListAPIView):
 
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
+
     # pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
