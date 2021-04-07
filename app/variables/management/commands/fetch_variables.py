@@ -194,21 +194,30 @@ class Command(BaseCommand):
                     f"\nSuccessfully updated database for {len(result)} variables!\n"
                 )
             )
+            # ----------------------------------------
+            # Find all parents relations
+            # TODO: Skip when parents are already present
+            # ----------------------------------------
 
-            # UpDating MetaData and parents relations
             metadata.findAllParents()
+
+            # ----------------------------------------
+            # UpDating MetaData (after parents are done)
+            # Note: the sequence of updating metadata is important.
+            #  TODO: make it more robust and skip when present
+            # ----------------------------------------
+
             Variable.objects.all().update(metadata=None)
             metadata.updateByVariableTree()
             for entry in Variable.objects.all():
                 metadata.makeAlias(entry)
                 metadata.variableType(entry)
+
+            # needs to have variableType updated first
+            for entry in Variable.objects.all():
                 metadata.get_input_offsprings(entry)
 
-            # update PDRS rules only: for alias
-            # for entry in Variable.objects.filter(name__icontains='pdrs'):
-            #     metadata.PDRS_makeAlias(entry)
-
-    except CommandError as error:
-        self.stdout.write(
-            self.style.ERROR(f"\nError creating Variable: {str(error)}")
-        )
+        except CommandError as error:
+            self.stdout.write(
+                self.style.ERROR(f"\nError creating Variable: {str(error)}")
+            )
