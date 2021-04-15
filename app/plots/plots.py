@@ -23,10 +23,10 @@ def varIDBarChart(name='alias'):
 
     if (name == 'id'):
         display_name = var_names
-        display_height = 11000
+        display_height = len(var_names) * 20
     elif(name == 'alias'):
         display_name = var_alias
-        display_height = 9000
+        display_height = len(var_alias) * 20
 
     trace1 = go.Bar(y=display_name,
                     x=parents_number,
@@ -47,7 +47,7 @@ def varIDBarChart(name='alias'):
     data = [trace1, trace2]
     layout = go.Layout(
         barmode='stack',
-        width=1300,
+        width=1000,
         height=display_height,
         yaxis=dict(
             categoryorder='total ascending',
