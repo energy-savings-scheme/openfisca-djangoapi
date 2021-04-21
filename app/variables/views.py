@@ -41,6 +41,8 @@ class VariablesList(generics.ListAPIView):
         is_input = self.request.query_params.get("is_input", None)
         majorCat = self.request.query_params.get("majorcat", None)
         minorCat = self.request.query_params.get("minorcat", None)
+        schedule = self.request.query_params.get("schedule", None)
+        activity = self.request.query_params.get("activity", None)
 
         if is_input is not None:
             if is_input.lower() == "false":
@@ -67,6 +69,19 @@ class VariablesList(generics.ListAPIView):
 
         if minorCat is not None:
             query_set = query_set.filter(metadata__minorCat=minorCat)
+
+        if schedule is not None:
+            query_set = query_set.filter(
+                metadata__regulation_reference__part__part_type="Schedule",
+                metadata__regulation_reference__part__identifier=schedule,
+            )
+
+        if activity is not None:
+            query_set = query_set.filter(
+                metadata__regulation_reference__part__part_type="Schedule",
+                metadata__regulation_reference__part__part__part_type="Activity Definition",
+                metadata__regulation_reference__part__part__identifier=activity,
+            )
 
         # print(query_set.count())
         return query_set
