@@ -55,90 +55,93 @@ variableTree = {
         "F14",
         "F15",
     ],
-    'PDRS': [
-        "Air_Conditioner", "ROOA"
-    ]
+    "PDRS": ["Air_Conditioner", "ROOA"],
 }
 
 
 # TODO: how to preserve the metadata from openfisca?
 
+
 def update_categories(majorCat, minorCat):
     entries = Variable.objects.select_for_update().filter(
-        Q(name__iregex=rf"{minorCat}[^0-9]") | Q(
-            description__iregex=rf"{minorCat}[^0-9]"))
-    entries.update(
-        metadata={"majorCat": majorCat, "minorCat": minorCat})
+        Q(name__iregex=rf"{minorCat}[^0-9]")
+        | Q(description__iregex=rf"{minorCat}[^0-9]")
+    )
+    entries.update(metadata={"majorCat": majorCat, "minorCat": minorCat})
 
 
-def updateByVariableTree():
-    for key in variableTree:
-        majorCat = key
-        for subCat in variableTree[key]:
-            update_categories(majorCat, subCat)
+# NOTE (RP) - I've commented out these unused functions
+
+# def updateByVariableTree():
+#     for key in variableTree:
+#         majorCat = key
+#         for subCat in variableTree[key]:
+#             update_categories(majorCat, subCat)
 
 
-def makeAlias(entry):
-    toReplace = {'_and': '&',
-                 'maximum': 'max',
-                 'minimum': 'min',
-                 '_percent': '%',
-                 'reference': 'ref'}
+# def makeAlias(entry):
+#     toReplace = {
+#         "_and": "&",
+#         "maximum": "max",
+#         "minimum": "min",
+#         "_percent": "%",
+#         "reference": "ref",
+#     }
 
-    name0 = entry.name
-    for word, newWord in toReplace.items():
-        name0 = name0.replace(word, newWord)
+#     name0 = entry.name
+#     for word, newWord in toReplace.items():
+#         name0 = name0.replace(word, newWord)
 
-    alias = re.sub(r'\b[A-Z]\d+_[a-zA-Z0-9]{1}_', "", name0)
-    alias = re.sub(r'\b[A-Z]\d+_', "", alias)
+#     alias = re.sub(r"\b[A-Z]\d+_[a-zA-Z0-9]{1}_", "", name0)
+#     alias = re.sub(r"\b[A-Z]\d+_", "", alias)
 
-    aliasList = []
-    for word in alias.split("_"):
-        if word.isupper():
-            aliasList.append(word)
-        else:
-            aliasList.append(word.title())
+#     aliasList = []
+#     for word in alias.split("_"):
+#         if word.isupper():
+#             aliasList.append(word)
+#         else:
+#             aliasList.append(word.title())
 
-    alias = " ".join(aliasList)
+#     alias = " ".join(aliasList)
 
-    if entry.metadata is None:
-        entry.metadata = {"alias": alias}
-    else:
-        entry.metadata['alias'] = alias
-    entry.save()
+#     if entry.metadata is None:
+#         entry.metadata = {"alias": alias}
+#     else:
+#         entry.metadata["alias"] = alias
+#     entry.save()
 
 
-def PDRS_makeAlias(entry):
-    alias0 = entry.name.split("__")[-1]
-    alias = " ".join(alias0.split("_")).title()
-    if entry.metadata is None:
-        entry.metadata = {"alias": alias}
-    else:
-        entry.metadata['alias'] = alias
-    entry.save()
+# def PDRS_makeAlias(entry):
+#     alias0 = entry.name.split("__")[-1]
+#     alias = " ".join(alias0.split("_")).title()
+#     if entry.metadata is None:
+#         entry.metadata = {"alias": alias}
+#     else:
+#         entry.metadata['alias'] = alias
+#     entry.save()
 
 
 def variableType(entry):
-    if (entry.parents.count() == 0 and entry.children.count() > 0):
+    if entry.parents.count() == 0 and entry.children.count() > 0:
         if entry.metadata is None:
-            entry.metadata = {"variable-type": 'output'}
+            entry.metadata = {"variable-type": "output"}
         else:
-            entry.metadata['variable-type'] = 'output'
-    elif (entry.children.count() == 0 and entry.parents.count() > 0):
+            entry.metadata["variable-type"] = "output"
+    elif entry.children.count() == 0 and entry.parents.count() > 0:
         if entry.metadata is None:
-            entry.metadata = {"variable-type": 'input'}
+            entry.metadata = {"variable-type": "input"}
         else:
-            entry.metadata['variable-type'] = 'input'
-    elif (entry.children.count() == 0 and entry.parents.count() == 0):
+            entry.metadata["variable-type"] = "input"
+    elif entry.children.count() == 0 and entry.parents.count() == 0:
         if entry.metadata is None:
-            entry.metadata = {"variable-type": 'orphan'}
+            entry.metadata = {"variable-type": "orphan"}
         else:
-            entry.metadata['variable-type'] = 'orphan'
+            entry.metadata["variable-type"] = "orphan"
     else:
         if entry.metadata is None:
-            entry.metadata = {"variable-type": 'intermediary'}
+            entry.metadata = {"variable-type": "intermediary"}
         else:
-            entry.metadata['variable-type'] = 'intermediary'
+            entry.metadata["variable-type"] = "intermediary"
     entry.save()
 
 
@@ -158,14 +161,13 @@ def findAllParents():
 def get_input_offsprings(entry):
     input_offsprings = []
     G = nx.DiGraph()
-    H = get_variable_graph(
-        entry.name, G)
+    H = get_variable_graph(entry.name, G)
     for node, nodeAttr in H.nodes(data=True):
-        if nodeAttr['type'] == 'input':
+        if nodeAttr["type"] == "input":
             input_offsprings.append(node)
 
     if entry.metadata is None:
         entry.metadata = {"input_offspring": input_offsprings}
     else:
-        entry.metadata['input_offspring'] = input_offsprings
+        entry.metadata["input_offspring"] = input_offsprings
     entry.save()
