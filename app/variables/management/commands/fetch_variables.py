@@ -197,7 +197,11 @@ class Command(BaseCommand):
             # TODO: Skip when parents are already present
             # ----------------------------------------
 
-            # metadata.findAllParents()
+            # Set 'parents' field for all objects
+            for entry in Variable.objects.all():
+                # TODO: only update parents when it is absent. (with value None?)
+                entry.parents.set(entry.parent_set.all())
+                entry.save()
 
             # ----------------------------------------
             # UpDating MetaData (after parents are done)
@@ -205,15 +209,21 @@ class Command(BaseCommand):
             #  TODO: make it more robust and skip when present
             # ----------------------------------------
 
-            # Variable.objects.all().update(metadata=None)
+            # Variable.objects.all().update(metadata=None) # NOTE (RP) - Why is this necessary?
             # metadata.updateByVariableTree()
-            # for entry in Variable.objects.all():
-            #     metadata.makeAlias(entry)
-            #     metadata.variableType(entry)
+            for entry in Variable.objects.all():
+
+                # `metadata.get_input_offsprings` requires every Variable to have an alias ...
+                # so we'll just add a placeholder alias if none already exists.
+                # TODO - make `metadata.get_input_offsprings` less reliant on a particular metadata structure
+                if entry.metadata.get("alias") is None:
+                    entry.metadata["alias"] = entry.name
+                    entry.save()
+                metadata.variableType(entry)
 
             # needs to have variableType updated first
-            # for entry in Variable.objects.all():
-            #     metadata.get_input_offsprings(entry)
+            for entry in Variable.objects.all():
+                metadata.get_input_offsprings(entry)
 
         except CommandError as error:
             self.stdout.write(

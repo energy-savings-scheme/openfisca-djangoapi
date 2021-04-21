@@ -4,73 +4,71 @@ from django.db.models import Count, Q
 from plots.network_graph import get_variable_graph
 import networkx as nx
 
-variableTree = {
-    "nabers": ["office", "apartment"],
-    "D": [
-        "D1",
-        "D2",
-        "D3",
-        "D4",
-        "D5",
-        "D6",
-        "D7",
-        "D8",
-        "D9",
-        "D10",
-        "D11",
-        "D12",
-        "D13",
-        "D14",
-        "D15",
-    ],
-    "E": [
-        "E1",
-        "E2",
-        "E3",
-        "E4",
-        "E5",
-        "E6",
-        "E7",
-        "E8",
-        "E9",
-        "E10",
-        "E11",
-        "E12",
-        "E13",
-    ],
-    "F": [
-        "F1",
-        "F2",
-        "F3",
-        "F4",
-        "F5",
-        "F6",
-        "F7",
-        "F8",
-        "F9",
-        "F10",
-        "F11",
-        "F12",
-        "F13",
-        "F14",
-        "F15",
-    ],
-    "PDRS": ["Air_Conditioner", "ROOA"],
-}
-
-
-# TODO: how to preserve the metadata from openfisca?
-
-
-def update_categories(majorCat, minorCat):
-    entries = Variable.objects.select_for_update().filter(
-        Q(name__iregex=rf"{minorCat}[^0-9]")
-        | Q(description__iregex=rf"{minorCat}[^0-9]")
-    )
-    entries.update(metadata={"majorCat": majorCat, "minorCat": minorCat})
+# variableTree = {
+#     "nabers": ["office", "apartment"],
+#     "D": [
+#         "D1",
+#         "D2",
+#         "D3",
+#         "D4",
+#         "D5",
+#         "D6",
+#         "D7",
+#         "D8",
+#         "D9",
+#         "D10",
+#         "D11",
+#         "D12",
+#         "D13",
+#         "D14",
+#         "D15",
+#     ],
+#     "E": [
+#         "E1",
+#         "E2",
+#         "E3",
+#         "E4",
+#         "E5",
+#         "E6",
+#         "E7",
+#         "E8",
+#         "E9",
+#         "E10",
+#         "E11",
+#         "E12",
+#         "E13",
+#     ],
+#     "F": [
+#         "F1",
+#         "F2",
+#         "F3",
+#         "F4",
+#         "F5",
+#         "F6",
+#         "F7",
+#         "F8",
+#         "F9",
+#         "F10",
+#         "F11",
+#         "F12",
+#         "F13",
+#         "F14",
+#         "F15",
+#     ],
+#     "PDRS": ["Air_Conditioner", "ROOA"],
+# }
 
 
 # NOTE (RP) - I've commented out these unused functions
+
+
+# def update_categories(majorCat, minorCat):
+#     entries = Variable.objects.select_for_update().filter(
+#         Q(name__iregex=rf"{minorCat}[^0-9]")
+#         | Q(description__iregex=rf"{minorCat}[^0-9]")
+#     )
+#     entries.update(metadata={"majorCat": majorCat, "minorCat": minorCat})
+
 
 # def updateByVariableTree():
 #     for key in variableTree:
@@ -145,20 +143,24 @@ def variableType(entry):
     entry.save()
 
 
-def findAllParents():
-    for entry in Variable.objects.all():
-        # TODO: only update parents when it is absent. (with value None?)
-        entry.parents.set(entry.parent_set.all())
-        entry.save()
+# NOTE (RP) - this operation is not related to `metadata` - so I've moved it to within the `fetch_variables` function
+# def findAllParents():
+#     for entry in Variable.objects.all():
+#         # TODO: only update parents when it is absent. (with value None?)
+#         entry.parents.set(entry.parent_set.all())
+#         entry.save()
 
-    # update PDRS rules only
-    # for entry in Variable.objects.filter(name__icontains='pdrs'):
-    #     print(entry.name)
-    #     entry.parents.set(entry.parent_set.all())
-    #     entry.save()
+# update PDRS rules only
+# for entry in Variable.objects.filter(name__icontains='pdrs'):
+#     print(entry.name)
+#     entry.parents.set(entry.parent_set.all())
+#     entry.save()
 
 
 def get_input_offsprings(entry):
+    # NOTE (RP) -> the `nx.DiGraph` function is very slow and probably not necessary.
+    #               I would suggest instead recursively searching through 'children'
+    #               until you've reached the bottom of the tree.
     input_offsprings = []
     G = nx.DiGraph()
     H = get_variable_graph(entry.name, G)
@@ -166,8 +168,5 @@ def get_input_offsprings(entry):
         if nodeAttr["type"] == "input":
             input_offsprings.append(node)
 
-    if entry.metadata is None:
-        entry.metadata = {"input_offspring": input_offsprings}
-    else:
-        entry.metadata["input_offspring"] = input_offsprings
+    entry.metadata["input_offspring"] = input_offsprings
     entry.save()
