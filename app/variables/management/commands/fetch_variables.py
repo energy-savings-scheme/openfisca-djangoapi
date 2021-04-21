@@ -102,8 +102,7 @@ class Command(BaseCommand):
             )
 
             # Get variables from API
-            variables_data = requests.get(
-                f"{settings.OPENFISCA_API_URL}/variables")
+            variables_data = requests.get(f"{settings.OPENFISCA_API_URL}/variables")
             data = variables_data.json()
 
             # Check that the OpenFisca API returned a 200 response. If not, raise Exception
@@ -123,14 +122,12 @@ class Command(BaseCommand):
             num_created = 0
             num_already_exists = 0
 
-            self.stdout.write(self.style.SUCCESS(
-                "Adding Variables to database "))
+            self.stdout.write(self.style.SUCCESS("Adding Variables to database "))
 
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
-                obj, created = Variable.objects.get_or_create(
-                    name=variable["name"])
+                obj, created = Variable.objects.get_or_create(name=variable["name"])
 
                 # Write to terminal to show progress
                 self.stdout.write(self.style.SUCCESS("."))
@@ -144,8 +141,7 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             self.stdout.write(
-                self.style.SUCCESS(
-                    "\nFetching Variable details from OpenFisca API ")
+                self.style.SUCCESS("\nFetching Variable details from OpenFisca API ")
             )
 
             future = asyncio.ensure_future(run(variables_list, self))
@@ -156,11 +152,12 @@ class Command(BaseCommand):
                 obj = Variable.objects.get(name=data["id"])
 
                 # Update data as per response from OpenFisca API
-                obj.description = data.get("description")
-                obj.value_type = data.get("valueType")
-                obj.definition_period = data.get("definitionPeriod")
                 obj.default_value = str(data.get("defaultValue"))
+                obj.description = data.get("description")
+                obj.definition_period = data.get("definitionPeriod")
+                obj.metadata = data.get("metadata")
                 obj.possible_values = data.get("possibleValues")
+                obj.value_type = data.get("valueType")
 
                 # Link this Variable object to an Entity object according to the entity `name` attribute
                 try:
@@ -194,12 +191,17 @@ class Command(BaseCommand):
                     f"\nSuccessfully updated database for {len(result)} variables!\n"
                 )
             )
+
             # ----------------------------------------
             # Find all parents relations
             # TODO: Skip when parents are already present
             # ----------------------------------------
 
-            metadata.findAllParents()
+            # Set 'parents' field for all objects
+            for entry in Variable.objects.all():
+                # TODO: only update parents when it is absent. (with value None?)
+                entry.parents.set(entry.parent_set.all())
+                entry.save()
 
             # ----------------------------------------
             # UpDating MetaData (after parents are done)
@@ -207,10 +209,16 @@ class Command(BaseCommand):
             #  TODO: make it more robust and skip when present
             # ----------------------------------------
 
-            Variable.objects.all().update(metadata=None)
-            metadata.updateByVariableTree()
+            # Variable.objects.all().update(metadata=None) # NOTE (RP) - Why is this necessary?
+            # metadata.updateByVariableTree()
             for entry in Variable.objects.all():
-                metadata.makeAlias(entry)
+
+                # `metadata.get_input_offsprings` requires every Variable to have an alias ...
+                # so we'll just add a placeholder alias if none already exists.
+                # TODO - make `metadata.get_input_offsprings` less reliant on a particular metadata structure
+                if entry.metadata.get("alias") is None:
+                    entry.metadata["alias"] = entry.name
+                    entry.save()
                 metadata.variableType(entry)
 
             # needs to have variableType updated first
