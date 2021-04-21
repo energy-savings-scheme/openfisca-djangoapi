@@ -72,15 +72,26 @@ class VariablesList(generics.ListAPIView):
 
         if schedule is not None:
             query_set = query_set.filter(
-                metadata__regulation_reference__part__part_type="Schedule",
-                metadata__regulation_reference__part__identifier=schedule,
+                Q(
+                    metadata__regulation_reference__part__part_type="Schedule",
+                    metadata__regulation_reference__part__identifier=schedule,
+                )
+                | Q(
+                    metadata__regulation_reference__part__part__part_type="Schedule",
+                    metadata__regulation_reference__part__part__identifier=schedule,
+                )
             )
 
         if activity is not None:
             query_set = query_set.filter(
-                metadata__regulation_reference__part__part_type="Schedule",
-                metadata__regulation_reference__part__part__part_type="Activity Definition",
-                metadata__regulation_reference__part__part__identifier=activity,
+                Q(
+                    metadata__regulation_reference__part__part__part_type="Activity Definition",
+                    metadata__regulation_reference__part__part__identifier=activity,
+                )
+                | Q(
+                    metadata__regulation_reference__part__part_type="Activity Definition",
+                    metadata__regulation_reference__part__identifier=activity,
+                )
             )
 
         # print(query_set.count())
