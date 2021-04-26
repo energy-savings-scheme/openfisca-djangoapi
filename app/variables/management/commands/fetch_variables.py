@@ -163,10 +163,9 @@ class Command(BaseCommand):
                 obj.value_type = data.get("valueType")
 
                 # experiment to get a directory tree
-                directory = data.get("source")
-                directory_index = directory.split("/").index('variables')
-                print(data["id"])
-                print(directory.split("/")[directory_index:])
+                directory = data.get("source").split("#")[0].split("/")
+                directory_index = directory.index('variables')
+                obj.directory = "/".join(directory[directory_index:])
 
                 # Link this Variable object to an Entity object according to the entity `name` attribute
                 try:
@@ -212,13 +211,6 @@ class Command(BaseCommand):
                 entry.parents.set(entry.parent_set.all())
                 entry.save()
 
-            # ----------------------------------------
-            # UpDating MetaData (after parents are done)
-            # Note: the sequence of updating metadata is important.
-            #  TODO: make it more robust and skip when present
-            # ----------------------------------------
-
-            # Variable.objects.all().update(metadata=None) # NOTE (RP) - Why is this necessary?
             for entry in Variable.objects.all():
 
                 # `metadata.get_input_offsprings` requires every Variable to have an alias ...

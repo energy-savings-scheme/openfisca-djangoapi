@@ -11,14 +11,13 @@ class VariableListSerializer(serializers.ModelSerializer):
     children = serializers.StringRelatedField(many=True)
     parents = serializers.StringRelatedField(many=True)
     default_value = serializers.SerializerMethodField()
-    # children = serializers.StringRelatedField(source="get_children", many=True)
-    # parents = serializers.StringRelatedField(source="get_parents", many=True)
 
     class Meta:
         model = Variable
         fields = [
             "name",
             "description",
+            "directory",
             "value_type",
             "entity",
             "definition_period",
