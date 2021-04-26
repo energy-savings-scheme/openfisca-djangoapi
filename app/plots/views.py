@@ -15,12 +15,6 @@ def BarChart_alias(request):
     return response
 
 
-def Graph(request):
-    context = {'plot': network_graph()}
-    response = render(request, 'plots/barchart.html', context)
-    return response
-
-
 def NetworkGraph_shortest(request, var_id):
     """
     # GET dependency network graph of a single Variable

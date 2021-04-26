@@ -6,10 +6,9 @@ import numpy as np
 from networkx.utils import pairwise
 from networkx.algorithms.shortest_paths.unweighted import single_source_shortest_path_length
 import itertools
-
+from plots.plots import colorScheme
 
 # TODO: just a thought: can I pull all variables into a graph instead. Is it even possible? There would be clusters, which could be the automatic categories. i.e. we categorise by dependencies instead of guessing through var names and description.
-
 
 # TODO: check if I am using it the right way, particularly trying to get variable data
 Variable.objects.all().prefetch_related('children')
@@ -87,9 +86,11 @@ def display_pos(G, layout='shortest'):
 
 
 def graph(var_id, G, layout="shortest"):
+    # summary info on the network
+    main_node = G.nodes[var_id]['alias']
 
-    node_list = list(G.nodes)
-    edge_list = list(G.edges)
+    # node_list = list(G.nodes)
+    # edge_list = list(G.edges)
 
     pos = display_pos(G, layout)
 
@@ -98,8 +99,9 @@ def graph(var_id, G, layout="shortest"):
         x=[var_id_x], y=[var_id_y],
         mode='markers',
         hoverinfo='text',
-        text=var_id,
-        marker=dict(size=25, color='#fb743e', symbol='square')
+        text=main_node,
+        marker=dict(
+            size=25, color=colorScheme['trace1_color'], symbol='square')
     )
 
     node_x = []
@@ -111,16 +113,16 @@ def graph(var_id, G, layout="shortest"):
     for node, data in G.nodes(data=True):
         node_name.append(data['alias'])
         if data['type'] == 'input':
-            node_color.append('black')
-            node_size.append(20)
+            node_color.append(colorScheme['trace2_color'])
+            node_size.append(25)
             node_symbol.append('diamond')
         elif data['type'] == 'output':
-            node_color.append('#fb743e')
-            node_size.append(20)
+            node_color.append(colorScheme['trace1_color'])
+            node_size.append(25)
             node_symbol.append('square')
         else:
-            node_color.append('#8ac4d0')
-            node_size.append(20)
+            node_color.append(colorScheme['highlight_color'])
+            node_size.append(25)
             node_symbol.append('circle')
 
         x0, y0 = pos[node]
@@ -150,39 +152,32 @@ def graph(var_id, G, layout="shortest"):
 
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
-        line=dict(width=1, color='#888'),
+        line=dict(width=2, color=colorScheme['trace2_color']),
         hoverinfo='none',
     )
-
-    # summary info on the network
-    mainNode = G.nodes[var_id]['alias']
-    node_size = G.number_of_nodes()
-    edge_size = G.number_of_edges()
+    node_size_total = G.number_of_nodes()
+    edge_size_total = G.number_of_edges()
 
     layout = go.Layout(
-        title=f'{mainNode}\n' f'({node_size} nodes & {edge_size} edges)',
+        title=f'{main_node}\n' f'({node_size_total} nodes & {edge_size_total} edges)',
         height=800,
         width=800,
         showlegend=False,
-        paper_bgcolor='#f7f6e7',
-        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor=colorScheme['background_color'],
+        plot_bgcolor=colorScheme['background_color'],
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
     )
 
     # TODO: show direction (through color of edges?)
 
-    fig = go.Figure(data=[edge_trace, node_trace, var_id_trace], layout=layout)
+    fig = go.Figure(data=[edge_trace, node_trace,
+                          var_id_trace], layout=layout)
     plot_div = fig.to_html(full_html=False)
     return plot_div
 
 
 def network_graph(var_id, layout):
-    # var_id = 'F1_5_meets_installation_requirements'
-    # var_id = "office_maximum_electricity_consumption"
-    # var_id = "number_of_certificates"
-    # var_id = "PDRS__Air_Conditioner__peak_demand_savings"
-    # var_id = "PDRS__ROOA__peak_demand_savings"
 
     G = nx.DiGraph()
     H = get_variable_graph(
