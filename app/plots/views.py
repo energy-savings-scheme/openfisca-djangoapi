@@ -1,4 +1,4 @@
-from plots.plots import varIDBarChart
+from plots.plots import varIDBarChart, variable_directory
 from plots.network_graph import network_graph
 from django.shortcuts import render
 
@@ -11,6 +11,12 @@ def BarChart_id(request):
 
 def BarChart_alias(request):
     context = {'plot': varIDBarChart('alias')}
+    response = render(request, 'plots/barchart.html', context)
+    return response
+
+
+def Directory_Map(request):
+    context = {'plot': variable_directory()}
     response = render(request, 'plots/barchart.html', context)
     return response
 
