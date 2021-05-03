@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 from plotly.io import to_html
 import networkx as nx
 import plotly.express as px
