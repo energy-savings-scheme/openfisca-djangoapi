@@ -128,9 +128,9 @@ def variable_directory():
 
     fig = px.treemap(
         df, path=['scheme', 'method', 'file'], color_continuous_scale='RdBu', color_continuous_midpoint='10',
-        height=900, width=1300)
+        height=700, width=1500)
 
-    fig.update_layout(uniformtext=dict(minsize=10, mode='hide'))
+    # fig.update_layout(uniformtext=dict(minsize=10, mode='hide'))
 
     plot_div = fig.to_html(full_html=False)
     return plot_div
