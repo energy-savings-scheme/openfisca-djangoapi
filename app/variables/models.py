@@ -29,6 +29,9 @@ class Variable(models.Model):
     name = models.CharField(
         max_length=255, null=False, blank=False, help_text="Variable name"
     )
+    directory = models.TextField(
+        null=False, blank=False, help_text="File directory of this variable"
+    )
     description = models.TextField(
         null=True, blank=True, help_text="Human-readable description"
     )

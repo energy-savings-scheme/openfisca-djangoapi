@@ -11,7 +11,6 @@ import asyncio
 from aiohttp import ClientSession
 import requests
 from variables import metadata
-
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
@@ -102,7 +101,8 @@ class Command(BaseCommand):
             )
 
             # Get variables from API
-            variables_data = requests.get(f"{settings.OPENFISCA_API_URL}/variables")
+            variables_data = requests.get(
+                f"{settings.OPENFISCA_API_URL}/variables")
             data = variables_data.json()
 
             # Check that the OpenFisca API returned a 200 response. If not, raise Exception
@@ -122,12 +122,14 @@ class Command(BaseCommand):
             num_created = 0
             num_already_exists = 0
 
-            self.stdout.write(self.style.SUCCESS("Adding Variables to database "))
+            self.stdout.write(self.style.SUCCESS(
+                "Adding Variables to database "))
 
             # First create a DB object for each variable
             # Currently these DB objects will only have the "name" populated
             for variable in variables_list:
-                obj, created = Variable.objects.get_or_create(name=variable["name"])
+                obj, created = Variable.objects.get_or_create(
+                    name=variable["name"])
 
                 # Write to terminal to show progress
                 self.stdout.write(self.style.SUCCESS("."))
@@ -141,7 +143,8 @@ class Command(BaseCommand):
                     num_already_exists += 1
 
             self.stdout.write(
-                self.style.SUCCESS("\nFetching Variable details from OpenFisca API ")
+                self.style.SUCCESS(
+                    "\nFetching Variable details from OpenFisca API ")
             )
 
             future = asyncio.ensure_future(run(variables_list, self))
@@ -158,6 +161,11 @@ class Command(BaseCommand):
                 obj.metadata = data.get("metadata")
                 obj.possible_values = data.get("possibleValues")
                 obj.value_type = data.get("valueType")
+
+                # experiment to get a directory tree
+                directory = data.get("source").split("#")[0].split("/")
+                directory_index = directory.index('variables')
+                obj.directory = "/".join(directory[directory_index:])
 
                 # Link this Variable object to an Entity object according to the entity `name` attribute
                 try:
@@ -203,14 +211,6 @@ class Command(BaseCommand):
                 entry.parents.set(entry.parent_set.all())
                 entry.save()
 
-            # ----------------------------------------
-            # UpDating MetaData (after parents are done)
-            # Note: the sequence of updating metadata is important.
-            #  TODO: make it more robust and skip when present
-            # ----------------------------------------
-
-            # Variable.objects.all().update(metadata=None) # NOTE (RP) - Why is this necessary?
-            # metadata.updateByVariableTree()
             for entry in Variable.objects.all():
 
                 # `metadata.get_input_offsprings` requires every Variable to have an alias ...

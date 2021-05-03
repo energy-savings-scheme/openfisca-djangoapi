@@ -1,11 +1,22 @@
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from plotly.io import to_html
 import networkx as nx
+import plotly.express as px
 
 
 from variables.models import Variable
 from django.db.models import Count
+
+colorScheme = {
+    "background_color": 'rgba(0, 0, 0, 0)',
+    "trace1_color": "#913535",
+    "trace2_color": "#283148",
+    "text_color": "#283148",
+    "highlight_color": "#8ea6b4",
+}
 
 
 def varIDBarChart(name='alias'):
@@ -33,14 +44,14 @@ def varIDBarChart(name='alias'):
                     orientation='h',
                     name="parents",
                     marker=dict(
-                        color='#fb743e'
+                        color=colorScheme['trace1_color']
                     ),
                     # TODO: onHover: display var_id
                     )
     trace2 = go.Bar(y=display_name,
                     x=children_number, orientation='h', name="children",
                     marker=dict(
-                        color='#8ac4d0'),
+                        color=colorScheme['trace2_color']),
 
                     )
 
@@ -56,18 +67,17 @@ def varIDBarChart(name='alias'):
             tickangle=0,
             tickfont=dict(family='serif',
                           size=12,
-                          color='#28527a',
+                          color=colorScheme['text_color'],
                           ),
         ),
         xaxis=dict(
             mirror=True,  # TODO: try with bigger top margin
             showticklabels=True,
-            dtick=2,
+            dtick=1,
             tick0=0,
         ),
-        paper_bgcolor='#f7f6e7',
-        plot_bgcolor='rgba(0,0,0,0)',
-        # plot_bgcolor='#314e52'
+        paper_bgcolor=colorScheme['background_color'],
+        plot_bgcolor=colorScheme['background_color'],
 
     )
     fig = go.Figure(data=data, layout=layout)
@@ -75,70 +85,52 @@ def varIDBarChart(name='alias'):
     return plot_div
 
 
-# def graph():
+def variable_directory():
+    """
+    this plots the directory map of all variables in the code base
+    """
+    # TODO: put it into the right data frame
 
-#     G = nx.random_geometric_graph(200, 0.125)
-#     edge_x = []
+    var_id = []
+    var_alias = []
+    scheme_name = []
+    method_name = []
+    file_name = []
+    file_var_count = []
 
-#     edge_y = []
-#     for edge in G.edges():
-#         x0, y0 = G.nodes[edge[0]]['pos']
-#         x1, y1 = G.nodes[edge[1]]['pos']
-#         edge_x.append(x0)
-#         edge_x.append(x1)
-#         edge_x.append(None)
-#         edge_y.append(y0)
-#         edge_y.append(y1)
-#         edge_y.append(None)
+    for entry in Variable.objects.all():
+        var_id.append(entry.name)
+        var_alias.append(entry.metadata['alias'])
+        directory_list = entry.directory.split("/")
+        if (directory_list[0] == 'variables'):
+            scheme_name.append(directory_list[1])
 
-#     edge_trace = go.Scatter(
-#         x=edge_x, y=edge_y,
-#         line=dict(width=0.5, color='#888'),
-#         hoverinfo='none',
-#         mode='lines')
+        if (directory_list[-1].endswith('.py')):
+            file_name.append(directory_list[-1])
 
-#     node_x = []
-#     node_y = []
-#     for node in G.nodes():
-#         x, y = G.nodes[node]['pos']
-#         node_x.append(x)
-#         node_y.append(y)
+        if (len(directory_list) == 4):
+            method_name.append(directory_list[2])
+        else:
+            method_name.append(directory_list[-1].split(".py")[0])
 
-#     node_trace = go.Scatter(
-#         x=node_x, y=node_y,
-#         mode='markers',
-#         hoverinfo='text',
-#         marker=dict(
-#             showscale=True,
-#             # colorscale options
-#             # 'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
-#             # 'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
-#             # 'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
-#             colorscale='YlGnBu',
-#             reversescale=True,
-#             color=[],
-#             size=10,
-#             colorbar=dict(
-#                 thickness=15,
-#                 title='Node Connections',
-#                 xanchor='left',
-#                 titleside='right'
-#             ),
-#             line_width=2))
-#     fig = go.Figure(data=[edge_trace, node_trace],
-#                     layout=go.Layout(
-#         title='<br>Network graph made with Python',
-#         titlefont_size=16,
-#         showlegend=False,
-#         hovermode='closest',
-#         margin=dict(b=20, l=5, r=5, t=40),
-#         annotations=[dict(
-#             text="Python code: <a href='https://plotly.com/ipython-notebooks/network-graphs/'> https://plotly.com/ipython-notebooks/network-graphs/</a>",
-#             showarrow=False,
-#             xref="paper", yref="paper",
-#             x=0.005, y=-0.002)],
-#         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-#         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
-#     )
-#     plot_div = fig.to_html(full_html=False)
-#     return plot_div
+    df = pd.DataFrame(data={
+        'var_id': var_id,
+        'alias': var_alias,
+        'scheme': scheme_name,
+        'method': method_name,
+        'file': file_name,
+    })
+    df.reset_index()
+    file_counts = df['file'].value_counts()
+    print(file_counts['Fridge_specific_variables.py'])
+    df1 = df.groupby(by='method').agg('count')
+    print(df1)
+
+    fig = px.treemap(
+        df, path=['scheme', 'method', 'file'], color_continuous_scale='RdBu', color_continuous_midpoint='10',
+        height=700, width=1500)
+
+    # fig.update_layout(uniformtext=dict(minsize=10, mode='hide'))
+
+    plot_div = fig.to_html(full_html=False)
+    return plot_div
