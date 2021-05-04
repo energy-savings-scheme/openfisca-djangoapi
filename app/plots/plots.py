@@ -24,12 +24,14 @@ def varIDBarChart(name='alias'):
     var_alias = []
     parents_number = []
     children_number = []
+    offspring_number = []
 
-    for entry in Variable.objects.filter(name__icontains='nabers'):
+    for entry in Variable.objects.filter(name__icontains='PDRS'):
         var_names.append(entry.name)
         var_alias.append(entry.metadata['alias'])
         parents_number.append(entry.parents.count())
         children_number.append(entry.children.count())
+        offspring_number.append(len(entry.metadata['input_offspring']))
 
     if (name == 'id'):
         display_name = var_names
@@ -39,10 +41,10 @@ def varIDBarChart(name='alias'):
         display_height = len(var_alias) * 30
 
     trace1 = go.Bar(x=display_name,
-                    y=parents_number,
+                    y=children_number,
                     # orientation='h',
-                    name="parents",
-                    text=parents_number,
+                    name="children",
+                    text=children_number,
                     textposition="auto",
                     marker=dict(
                         color=colorScheme['trace1_color']
@@ -50,11 +52,11 @@ def varIDBarChart(name='alias'):
                     # TODO: onHover: display var_id
                     )
     trace2 = go.Bar(x=display_name,
-                    y=children_number,
-                    text=children_number,
+                    y=offspring_number,
+                    text=offspring_number,
                     textposition="inside",
                     # orientation='h',
-                    name="children",
+                    name="input offsprings",
                     marker=dict(
                         color=colorScheme['trace2_color']),
 
