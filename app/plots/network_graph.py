@@ -25,7 +25,11 @@ def get_variable_graph(var_id, G):
     try:
         variable = Variable.objects.get(name=var_id)
         var_type = variable.metadata['variable-type']
-        alias = variable.metadata['alias']
+        aliasList = variable.metadata['alias'].split(" ")
+        if (len(aliasList) >= 5):
+            alias = " ".join(aliasList[0:5])
+        else:
+            alias = variable.metadata['alias']
         G.add_node(var_id, type=var_type, alias=alias)
 
         if (variable.children.count() != 0):
@@ -79,6 +83,12 @@ def display_pos(G, layout='shortest'):
             G, subset_key="subset", align='horizontal')
     elif layout == "planar":
         pos = nx.planar_layout(G)
+    elif layout == "spring":
+        pos = nx.spring_layout(G)
+    elif layout == "shell":
+        pos = nx.shell_layout(G)
+    elif layout == "spiral":
+        pos = nx.spiral_layout(G)
     else:
         pos = nx.spiral_layout(G)
 
@@ -97,9 +107,14 @@ def graph(var_id, G, layout="shortest"):
     var_id_x, var_id_y = pos[var_id]
     var_id_trace = go.Scatter(
         x=[var_id_x], y=[var_id_y],
-        mode='markers',
+        mode='markers+text',
         hoverinfo='text',
         text=main_node,
+        textposition="middle right",
+        textfont=dict(
+            size=14,
+            color=colorScheme['text_color']
+        ),
         marker=dict(
             size=25, color=colorScheme['trace1_color'], symbol='square')
     )
@@ -111,16 +126,18 @@ def graph(var_id, G, layout="shortest"):
     node_size = []
     node_symbol = []
     for node, data in G.nodes(data=True):
-        node_name.append(data['alias'])
         if data['type'] == 'input':
+            node_name.append(data['alias'])
             node_color.append(colorScheme['trace2_color'])
             node_size.append(25)
             node_symbol.append('diamond')
         elif data['type'] == 'output':
+            node_name.append(None)
             node_color.append(colorScheme['trace1_color'])
             node_size.append(25)
             node_symbol.append('square')
         else:
+            node_name.append(data['alias'])
             node_color.append(colorScheme['highlight_color'])
             node_size.append(25)
             node_symbol.append('circle')
@@ -132,9 +149,14 @@ def graph(var_id, G, layout="shortest"):
     node_trace = go.Scatter(
         x=node_x,
         y=node_y,
-        mode='markers',
+        mode='markers+text',
         hoverinfo='text',
         text=node_name,
+        textposition="middle center",
+        textfont=dict(
+            size=13,
+            color=colorScheme['text_color']
+        ),
         marker=dict(size=node_size, color=node_color, symbol=node_symbol),
     )
 
@@ -152,7 +174,7 @@ def graph(var_id, G, layout="shortest"):
 
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
-        line=dict(width=2, color=colorScheme['trace2_color']),
+        line=dict(width=1, color=colorScheme['trace2_color']),
         hoverinfo='none',
     )
     node_size_total = G.number_of_nodes()
@@ -160,8 +182,8 @@ def graph(var_id, G, layout="shortest"):
 
     layout = go.Layout(
         title=f'{main_node}\n' f'({node_size_total} nodes & {edge_size_total} edges)',
-        height=800,
-        width=800,
+        height=900,
+        width=1200,
         showlegend=False,
         paper_bgcolor=colorScheme['background_color'],
         plot_bgcolor=colorScheme['background_color'],
@@ -174,6 +196,7 @@ def graph(var_id, G, layout="shortest"):
     fig = go.Figure(data=[edge_trace, node_trace,
                           var_id_trace], layout=layout)
     plot_div = fig.to_html(full_html=False)
+
     return plot_div
 
 

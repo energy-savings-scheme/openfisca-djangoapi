@@ -25,7 +25,7 @@ def varIDBarChart(name='alias'):
     parents_number = []
     children_number = []
 
-    for entry in Variable.objects.all():
+    for entry in Variable.objects.filter(name__icontains='nabers'):
         var_names.append(entry.name)
         var_alias.append(entry.metadata['alias'])
         parents_number.append(entry.parents.count())
@@ -33,22 +33,28 @@ def varIDBarChart(name='alias'):
 
     if (name == 'id'):
         display_name = var_names
-        display_height = len(var_names) * 20
+        display_height = len(var_names) * 30
     elif(name == 'alias'):
         display_name = var_alias
-        display_height = len(var_alias) * 20
+        display_height = len(var_alias) * 30
 
-    trace1 = go.Bar(y=display_name,
-                    x=parents_number,
-                    orientation='h',
+    trace1 = go.Bar(x=display_name,
+                    y=parents_number,
+                    # orientation='h',
                     name="parents",
+                    text=parents_number,
+                    textposition="auto",
                     marker=dict(
                         color=colorScheme['trace1_color']
                     ),
                     # TODO: onHover: display var_id
                     )
-    trace2 = go.Bar(y=display_name,
-                    x=children_number, orientation='h', name="children",
+    trace2 = go.Bar(x=display_name,
+                    y=children_number,
+                    text=children_number,
+                    textposition="inside",
+                    # orientation='h',
+                    name="children",
                     marker=dict(
                         color=colorScheme['trace2_color']),
 
@@ -57,11 +63,10 @@ def varIDBarChart(name='alias'):
     data = [trace1, trace2]
     layout = go.Layout(
         barmode='stack',
-        width=1000,
+        width=1500,
         height=display_height,
         yaxis=dict(
-            categoryorder='total ascending',
-            showticklabels=True,
+            showticklabels=False,
             dtick=1,
             tickangle=0,
             tickfont=dict(family='serif',
@@ -74,6 +79,7 @@ def varIDBarChart(name='alias'):
             showticklabels=True,
             dtick=1,
             tick0=0,
+            categoryorder='total descending',
         ),
         paper_bgcolor=colorScheme['background_color'],
         plot_bgcolor=colorScheme['background_color'],
