@@ -13,9 +13,6 @@ class Activity(models.Model):
        Source: https://openfisca.org/doc/_modules/openfisca_core/variables.html#Variable
 
        """
-    activity_name = models.TextField(
-        null=False, blank=False, help_text="Description of the energy saving activity"
-    )
 
     version_name = models.TextField(
         null=False, blank=False, help_text="Rule Draft Version of this activity"
@@ -27,6 +24,10 @@ class Activity(models.Model):
 
     sub_method = models.TextField(
         null=False, blank=False, help_text="Description of the SubMethod"
+    )
+
+    activity_name = models.TextField(
+        null=False, blank=False, help_text="Description of the energy saving activity"
     )
 
     energy_savings = models.ForeignKey(
