@@ -4,6 +4,32 @@ from plots.network_graph import get_variable_graph
 import networkx as nx
 
 
+# def regulation_ref():
+# test = Variable.objects.get(
+#      name="PDRS_HEAB_AC_replace_meets_eligibility_requirements")
+
+#  ref = test.metadata["regulation_reference"]
+#   reg_ref = {'version': ref["version"]}
+
+#    while "part" in ref.keys():
+#         ref = ref["part"]
+#         if (ref["part_type"] == "SubMethod"):
+#             reg_ref["SubMethod"] = ref["title"]
+#         elif (ref["part_type"] == "Activity Definition"):
+#             reg_ref["Activity"] = ref["title"]
+#         elif (ref["part_type"] == "Requirement"):
+#             if ref["identifier"] == "energy_savings":
+#                 reg_ref["energy_savings"] = test
+#             elif ref["identifier"] == "implementation":
+#                 reg_ref["implementation"] = test.children
+#             elif ref["identifier"] == "eligibility":
+#                 reg_ref["implementation"] = test.children
+#             elif ref["identifier"] == "equipment":
+#                 reg_ref["implementation"] = test.children
+
+#     print(reg_ref)
+
+
 def variableType(entry):
     if entry.parents.count() == 0 and entry.children.count() > 0:
         if entry.metadata is None:
