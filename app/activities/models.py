@@ -14,12 +14,12 @@ class Activity(models.Model):
 
        """
 
-    version_name = models.TextField(
-        null=False, blank=False, help_text="Rule Draft Version of this activity"
-    )
-
     version_code = models.CharField(
         max_length=255, null=False, blank=False, help_text="Abbreviation of the drafted Rules Version Name"
+    )
+
+    version_name = models.TextField(
+        null=False, blank=False, help_text="Rule Draft Version of this activity"
     )
 
     sub_method = models.TextField(

@@ -1,8 +1,8 @@
-from django.utils import timezone
+# from django.utils import timezone
 from django.db.models import Count, Q
 from rest_framework import generics, filters
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
 
 
 from config.pagination import LargeResultsSetPagination
@@ -34,7 +34,6 @@ class VariablesList(generics.ListAPIView):
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
 
-    ActivityList()
     # test = Variable.objects.get(
     #     name="PDRS_HEAB_AC_replace_meets_eligibility_requirements")
 

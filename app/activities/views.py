@@ -1,6 +1,7 @@
 from variables.models import Variable
 from activities.models import Activity
-# Create your views here.
+from activities.serializers import ActivityListSerializer
+from rest_framework import generics
 
 from django.http import HttpResponse
 
@@ -10,7 +11,9 @@ def index(request):
 
 
 def regulation_ref(entry):
-
+    """
+    helper function to create activity entry by unpacking the regulation reference from openfisca variables
+    """
     metadata = entry.metadata
     if (metadata != None):
         if "regulation_reference" in metadata.keys():
@@ -39,7 +42,7 @@ def regulation_ref(entry):
             return reg_ref
 
 
-def ActivityList():
+def ActivityData():
 
     all_variables = Variable.objects.all()
     for entry in all_variables:
@@ -68,4 +71,16 @@ def ActivityList():
                             getattr(activity, k).add(child)
             activity.save()
 
-    print(Activity.objects.all())
+    # print(Activity.objects.all())
+
+
+class ActivityList(generics.ListAPIView):
+    """
+      LIST all Activities stored in the database
+
+    # Returns
+    - array of Activity objects (JSON)
+
+    """
+    queryset = Activity.objects.all()
+    serializer_class = ActivityListSerializer
