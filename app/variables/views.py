@@ -8,8 +8,6 @@ from rest_framework import generics, filters
 from config.pagination import LargeResultsSetPagination
 from variables.models import Variable
 from variables.serializers import VariableListSerializer, VariableChildrenSerializer
-from activities.views import ActivityList
-# from . import metadata
 
 
 class VariablesList(generics.ListAPIView):
@@ -33,30 +31,6 @@ class VariablesList(generics.ListAPIView):
 
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
-
-    # test = Variable.objects.get(
-    #     name="PDRS_HEAB_AC_replace_meets_eligibility_requirements")
-
-    # ref = test.metadata["regulation_reference"]
-    # reg_ref = {'version': ref["version"]}
-
-    # while "part" in ref.keys():
-    #     ref = ref["part"]
-    #     if (ref["part_type"] == "SubMethod"):
-    #         reg_ref["SubMethod"] = ref["title"]
-    #     elif (ref["part_type"] == "Activity Definition"):
-    #         reg_ref["Activity"] = ref["title"]
-    #     elif (ref["part_type"] == "Requirement"):
-    #         if ref["identifier"] == "energy_savings":
-    #             reg_ref["energy_savings"] = test
-    #         elif ref["identifier"] == "implementation":
-    #             reg_ref["implementation"] = test.children
-    #         elif ref["identifier"] == "eligibility":
-    #             reg_ref["implementation"] = test.children
-    #         elif ref["identifier"] == "equipment":
-    #             reg_ref["implementation"] = test.children
-
-    # print(reg_ref)
 
     def get_queryset(self):
         query_set = Variable.objects.all()

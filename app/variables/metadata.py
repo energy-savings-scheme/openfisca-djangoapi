@@ -41,3 +41,35 @@ def get_input_offsprings(entry):
 
     entry.metadata["input_offspring"] = input_offsprings
     entry.save()
+
+
+def regulation_ref(metadata):
+    """
+    helper function to create activity entry by unpacking the regulation reference from openfisca variables
+    """
+    # metadata = entry.metadata
+    if (metadata != None):
+        if "regulation_reference" in metadata.keys():
+
+            ref = entry.metadata["regulation_reference"]
+            reg_ref = {"version_name": ref['version'],
+                       "version_code": ref['identifier']}
+            while "part" in ref.keys():
+                ref = ref["part"]
+                if (ref["part_type"] == "SubMethod"):
+                    reg_ref["subMethod"] = ref["title"]
+
+                if (ref["part_type"] == "Activity Definition"):
+                    reg_ref["activity"] = ref["title"]
+
+                if (ref["part_type"] == "Requirement"):
+                    if ref["identifier"] == "energy_savings":
+                        reg_ref["energy_savings"] = True
+                    elif ref["identifier"] == "implementation":
+                        reg_ref["implementation"] = True
+                    elif ref["identifier"] == "eligibility":
+                        reg_ref["eligibility"] = True
+                    elif ref["identifier"] == "equipment":
+                        reg_ref["equipment"] = True
+
+            return reg_ref

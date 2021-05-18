@@ -6,10 +6,6 @@ from rest_framework import generics
 from django.http import HttpResponse
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
-
-
 def regulation_ref(entry):
     """
     helper function to create activity entry by unpacking the regulation reference from openfisca variables
@@ -42,7 +38,7 @@ def regulation_ref(entry):
             return reg_ref
 
 
-def ActivityData():
+def BuildActivityTable():
 
     all_variables = Variable.objects.all()
     for entry in all_variables:
