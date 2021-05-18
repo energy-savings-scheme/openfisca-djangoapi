@@ -10,12 +10,13 @@
 import asyncio
 from aiohttp import ClientSession
 import requests
-from variables import metadata
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from entities.models import Entity
 from variables.models import Variable
+from activities.views import BuildActivityTable
+from variables import metadata
 
 
 async def fetch(url, session, django_command):
@@ -200,6 +201,10 @@ class Command(BaseCommand):
                 )
             )
 
+            # ----------------------------------------
+            # Build Activity Table
+            # ----------------------------------------
+            BuildActivityTable()
             # ----------------------------------------
             # Find all parents relations
             # TODO: Skip when parents are already present

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "entities.apps.EntityConfig",
     "variables.apps.VariableConfig",
     "plots.apps.PlotsConfig",
+    "activities.apps.ActivitiesConfig",
 
 ]
 

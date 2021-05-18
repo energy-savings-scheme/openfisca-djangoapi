@@ -1,14 +1,13 @@
-from django.utils import timezone
+# from django.utils import timezone
 from django.db.models import Count, Q
 from rest_framework import generics, filters
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
 
 
 from config.pagination import LargeResultsSetPagination
 from variables.models import Variable
 from variables.serializers import VariableListSerializer, VariableChildrenSerializer
-from . import metadata
 
 
 class VariablesList(generics.ListAPIView):
@@ -32,8 +31,6 @@ class VariablesList(generics.ListAPIView):
 
     queryset = Variable.objects.all()
     serializer_class = VariableListSerializer
-
-    # pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
         query_set = Variable.objects.all()
