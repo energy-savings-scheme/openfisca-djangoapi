@@ -52,11 +52,11 @@ def varIDBarChart(name='alias'):
                     # TODO: onHover: display var_id
                     )
     trace2 = go.Bar(x=display_name,
-                    y=offspring_number,
-                    text=offspring_number,
+                    y=parents_number,
+                    text=parents_number,
                     textposition="inside",
                     # orientation='h',
-                    name="input offsprings",
+                    name="parents",
                     marker=dict(
                         color=colorScheme['trace2_color']),
 
@@ -103,7 +103,7 @@ def variable_directory():
     scheme_name = []
     method_name = []
     file_name = []
-    file_var_count = []
+    # file_var_count = []
 
     for entry in Variable.objects.all():
         var_id.append(entry.name)
@@ -120,24 +120,29 @@ def variable_directory():
         else:
             method_name.append(directory_list[-1].split(".py")[0])
 
-    df = pd.DataFrame(data={
+    df_var = pd.DataFrame(data={
         'var_id': var_id,
         'alias': var_alias,
         'scheme': scheme_name,
         'method': method_name,
         'file': file_name,
     })
-    df.reset_index()
-    file_counts = df['file'].value_counts()
-    print(file_counts['Fridge_specific_variables.py'])
-    df1 = df.groupby(by='method').agg('count')
-    print(df1)
+    df_var.reset_index()
+    # file_counts = df_var['file'].value_counts()
+
+    # df1 = df_var.groupby(by='method').agg('count')
 
     fig = px.treemap(
-        df, path=['scheme', 'method', 'file'], color_continuous_scale='RdBu', color_continuous_midpoint='10',
+        df_var, path=['scheme', 'method', 'file'],
+        color='scheme',
+        color_discrete_map={
+            '(?)': colorScheme['highlight_color'],
+            'General_Appliances': colorScheme['trace2_color'], 'Home_Energy_Efficiency_Retrofits (HEER)': colorScheme['trace2_color'],
+            'High_Efficiency_Appliances_Business (HEAB)': colorScheme['trace2_color'],
+            'Other_ESS_methods': colorScheme['trace1_color'], 'Removal_of_Old_Appliances (RoOA)': colorScheme['trace2_color']},
+        title="Overview of Openfisca_nsw_safeguard Code Base",
         height=700, width=1500)
 
-    # fig.update_layout(uniformtext=dict(minsize=10, mode='hide'))
-
+    fig.update_layout(uniformtext=dict(minsize=14, mode='hide'))
     plot_div = fig.to_html(full_html=False)
     return plot_div

@@ -34,6 +34,6 @@ def NetworkGraph_shortest(request, var_id):
     - variable_name [str]: e.g. "/shortest/<variable_name>
 
     """
-    context = {'plot': network_graph(var_id, layout='shell')}
+    context = {'plot': network_graph(var_id, layout='shortest')}
     response = render(request, 'plots/barchart.html', context)
     return response
