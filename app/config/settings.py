@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     "plots.apps.PlotsConfig",
     "activities.apps.ActivitiesConfig",
     "api.apps.ApiConfig",
-
 ]
 
 MIDDLEWARE = [
@@ -65,7 +64,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -95,8 +94,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 # REST API Settings
 
 DEFAULT_RENDERER_CLASSES = (
-    "rest_framework.renderers.BrowsableAPIRenderer",
     "rest_framework.renderers.JSONRenderer",
+    "rest_framework.renderers.BrowsableAPIRenderer",
 )
 
 REST_FRAMEWORK = {
@@ -219,5 +218,4 @@ Who should use this?
 ###########################################
 
 # OpenFisca settings
-OPENFISCA_API_URL = env.str(
-    "OPENFISCA_API_URL", default="http://localhost:8001")
+OPENFISCA_API_URL = env.str("OPENFISCA_API_URL", default="http://localhost:8001")
