@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "variables.apps.VariableConfig",
     "plots.apps.PlotsConfig",
     "activities.apps.ActivitiesConfig",
+    "api.apps.ApiConfig",
 
 ]
 
