@@ -1,7 +1,20 @@
-from variables.models import Variable
+import re
 from django.db.models import Count, Q
 from plots.network_graph import get_variable_graph
 import networkx as nx
+
+
+def makeAlias(name0):
+    aliasList = []
+    for word in name0.split("_"):
+        if word.isupper():
+            aliasList.append(word)
+        else:
+            aliasList.append(word.title())
+
+    alias = " ".join(aliasList)
+
+    return alias
 
 
 def variableType(entry):

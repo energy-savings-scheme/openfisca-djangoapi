@@ -212,17 +212,16 @@ class Command(BaseCommand):
 
             # Set 'parents' field for all objects
             for entry in Variable.objects.all():
-                # TODO: only update parents when it is absent. (with value None?)
+                # TODO: only update parents when it is absent. (with value None)
                 entry.parents.set(entry.parent_set.all())
                 entry.save()
 
             for entry in Variable.objects.all():
-
                 # `metadata.get_input_offsprings` requires every Variable to have an alias ...
                 # so we'll just add a placeholder alias if none already exists.
                 # TODO - make `metadata.get_input_offsprings` less reliant on a particular metadata structure
                 if entry.metadata.get("alias") is None:
-                    entry.metadata["alias"] = entry.name
+                    entry.metadata["alias"] = metadata.makeAlias(entry.name)
                     entry.save()
                 metadata.variableType(entry)
 
