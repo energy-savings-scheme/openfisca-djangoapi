@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from api.constructor import OpenFiscaAPI_BaseView
+from api.serializers import OpenFiscaAPI_BaseSerializer
+from api.views import OpenFiscaAPI_BaseView
 
 from variables.models import Variable
 
@@ -18,10 +19,3 @@ class TestOpenFiscaAPI_Base(TestCase):
         # Test init method raises Exception for invalid variable
         with self.assertRaises(Variable.DoesNotExist):
             invalid = OpenFiscaAPI_BaseView(variable_name="invalid_variable")
-
-    # def test_get_dependencies_method(self):
-    #     base = OpenFiscaAPI_BaseView(variable_name="test_variable")
-    #     dependencies = base.get_dependencies()
-
-    #     assert isinstance(dependencies, list)
-    #     assert self.child_variable in dependencies

@@ -1,7 +1,6 @@
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from api.constructor import OpenFiscaAPI_BaseView
+from api.views import OpenFiscaAPI_BaseView
 from variables.models import Variable
 
 
