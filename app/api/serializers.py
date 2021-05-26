@@ -20,29 +20,45 @@ def get_serializer_field_for_variable(variable, write_only=False, read_only=Fals
 
     if variable.value_type == "Int":
         return serializers.IntegerField(
-            default=variable.default_value, read_only=read_only, write_only=write_only
+            default=variable.default_value,
+            read_only=read_only,
+            write_only=write_only,
+            help_text=variable.description,
         )
     elif variable.value_type == "Float":
         return serializers.FloatField(
-            default=variable.default_value, read_only=read_only, write_only=write_only
+            default=variable.default_value,
+            read_only=read_only,
+            write_only=write_only,
+            help_text=variable.description,
         )
     elif variable.value_type == "Boolean":
         return serializers.BooleanField(
-            default=variable.default_value, read_only=read_only, write_only=write_only
+            default=variable.default_value,
+            read_only=read_only,
+            write_only=write_only,
+            help_text=variable.description,
         )
     elif variable.value_type == "String":
         return serializers.CharField(
-            default=variable.default_value, read_only=read_only, write_only=write_only
+            default=variable.default_value,
+            read_only=read_only,
+            write_only=write_only,
+            help_text=variable.description,
         )
     elif variable.value_type == "Date":
         return serializers.DateField(
-            default=variable.default_value, read_only=read_only, write_only=write_only
+            default=variable.default_value,
+            read_only=read_only,
+            write_only=write_only,
+            help_text=variable.description,
         )
     elif variable.value_type == "Enum":
         return serializers.CharField(
             default="NOT IMPLEMENTED YET",
             read_only=read_only,
             write_only=write_only,
+            help_text=variable.description,
         )
     else:
         raise Exception(
@@ -84,7 +100,8 @@ class OpenFiscaAPI_BaseSerializer(ModelSerializer):
             default=datetime.date.today, write_only=True
         )
         fields[self.variable.name] = get_serializer_field_for_variable(
-            self.variable, read_only=True
+            self.variable,
+            read_only=True,
         )
 
         return fields
