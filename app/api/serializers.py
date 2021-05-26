@@ -1,7 +1,53 @@
+import datetime
+
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from variables.models import Variable
+
+
+def get_serializer_field_for_variable(variable, write_only=False, read_only=False):
+    """Helper function that returns the correct Serializer Field for a Variable.
+    The 'correct' field will depend on the `Variable.value_type` attribute, according
+    to the mapping below:
+        - "Int" -> serializers.IntegerField
+        - "Float" -> serializers.FloatField
+        - "Boolean" -> serializers.BooleanField
+        - "String" -> serializers.CharField
+        - "Date" -> serializers.DateField
+        - "Enum" -> serializers.ChoiceField
+    """
+
+    if variable.value_type == "Int":
+        return serializers.IntegerField(
+            default=variable.default_value, read_only=read_only, write_only=write_only
+        )
+    elif variable.value_type == "Float":
+        return serializers.FloatField(
+            default=variable.default_value, read_only=read_only, write_only=write_only
+        )
+    elif variable.value_type == "Boolean":
+        return serializers.BooleanField(
+            default=variable.default_value, read_only=read_only, write_only=write_only
+        )
+    elif variable.value_type == "String":
+        return serializers.CharField(
+            default=variable.default_value, read_only=read_only, write_only=write_only
+        )
+    elif variable.value_type == "Date":
+        return serializers.DateField(
+            default=variable.default_value, read_only=read_only, write_only=write_only
+        )
+    elif variable.value_type == "Enum":
+        return serializers.CharField(
+            default="NOT IMPLEMENTED YET",
+            read_only=read_only,
+            write_only=write_only,
+        )
+    else:
+        raise Exception(
+            f"Cannot find corresponding Serializer Field for variable: {variable.name}"
+        )
 
 
 class OpenFiscaAPI_BaseSerializer(ModelSerializer):
@@ -28,9 +74,17 @@ class OpenFiscaAPI_BaseSerializer(ModelSerializer):
 
         # NOTE - this is currently incomplete! It currently always just returns a "ChoiceField".
         # What we want is to return the correct Field type based on the `Variable.value_type`
-        return {
-            dependency.name: serializers.ChoiceField(
-                choices=["red", "green", "blue"], style={"base_template": "radio.html"}
+        fields = {
+            dependency.name: get_serializer_field_for_variable(
+                dependency, write_only=True
             )
             for dependency in self.get_dependencies()
         }
+        fields["period"] = serializers.DateField(
+            default=datetime.date.today, write_only=True
+        )
+        fields[self.variable.name] = get_serializer_field_for_variable(
+            self.variable, read_only=True
+        )
+
+        return fields

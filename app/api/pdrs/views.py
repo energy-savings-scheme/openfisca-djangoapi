@@ -5,4 +5,4 @@ from variables.models import Variable
 
 
 class Activity_x1(OpenFiscaAPI_BaseView):
-    variable_name = "PDRS_AC_firmness_factor"
+    variable_name = "PDRS_HEAB_AC_replace_peak_demand_savings"
