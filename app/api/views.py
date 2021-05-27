@@ -1,7 +1,15 @@
+import json
+import requests
+
+from django.conf import settings
+
 from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.exceptions import APIException
 from rest_framework.generics import CreateAPIView
+from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
+from rest_framework.views import APIView
+
 
 from api.serializers import OpenFiscaAPI_BaseSerializer
 from variables.models import Variable
@@ -64,4 +72,45 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
         # ii) Make POST request to `https://{openfisca_api_url}/calculate/`
 
         print(serializer.validated_data)
-        return None
+
+        try:
+            resp = requests.post(
+                f"{settings.OPENFISCA_API_URL}/calculate/", json={"key": "value"}
+            )
+        except Exception as e:
+            raise APIException(
+                {
+                    "error": "An occurred occured while making the request to the OpenFisca API!",
+                    "message": str(e),
+                }
+            )
+
+        # Handle OpenFisca `400: Bad Request` error
+        if resp.status_code == 400:
+            raise ValidationError(
+                {
+                    "error": "An occurred occured during the OpenFisca calculation!",
+                    "message": json.loads(resp.text),
+                }
+            )
+
+        # Handle OpenFisca `500: Server Error` error
+        if resp.status_code == 500:
+            raise APIException(
+                {
+                    "error": "An occurred occured during the OpenFisca calculation!",
+                    "message": json.loads(resp.text),
+                }
+            )
+
+        # Handle other non-success responses:
+        if resp.status_code not in [200, 201]:
+            raise APIException(
+                {
+                    "error": "An occurred occured during the OpenFisca calculation!",
+                    "message": json.loads(resp.text),
+                }
+            )
+
+        # Finally - handle success!
+        return resp.data
