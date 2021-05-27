@@ -1,7 +1,9 @@
 from django.test import TestCase
+from rest_framework.test import APIRequestFactory
 
 from api.serializers import OpenFiscaAPI_BaseSerializer
 from api.views import OpenFiscaAPI_BaseView
+from api.pdrs.views import Activity_x1
 
 from variables.models import Variable
 
@@ -19,3 +21,43 @@ class TestOpenFiscaAPI_Base(TestCase):
         # Test init method raises Exception for invalid variable
         with self.assertRaises(Variable.DoesNotExist):
             invalid = OpenFiscaAPI_BaseView(variable_name="invalid_variable")
+
+
+class Test_View_Activity_x1(TestCase):
+    def setUp(self):
+        offsprings = [
+            "ESS__method_type",
+            "ESS__NABERS_type_of_creation",
+            "ESS__postcode",
+            "ESS__NABERS_benchmark_elec_consumption",
+            "ESS__NABERS_NABERS_electricity",
+            "ESS__NABERS_onsite_unaccounted_electricity",
+            "ESS__NABERS_counted_electricity_savings",
+        ]
+        for offspring in offsprings:
+            Variable.objects.create(name=offspring, value_type="Boolean")
+
+        self.variable = Variable.objects.create(
+            name="PDRS_HEAB_AC_replace_peak_demand_savings",
+            value_type="Boolean",
+            metadata={"input_offspring": offsprings},
+        )
+
+    def test_post_request(self):
+        factory = APIRequestFactory()
+        request = factory.post(
+            "/some_url/",
+            {
+                "ESS__method_type": True,
+                "ESS__NABERS_type_of_creation": "true",
+                "ESS__postcode": 0,
+                "ESS__NABERS_benchmark_elec_consumption": 0,
+                "ESS__NABERS_NABERS_electricity": 0,
+                "ESS__NABERS_onsite_unaccounted_electricity": 0,
+                "ESS__NABERS_counted_electricity_savings": 0,
+                "period": "2021-05-27",
+            },
+        )
+        res = Activity_x1.as_view()(request)
+
+        assert res.status_code == 201

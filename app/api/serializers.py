@@ -1,7 +1,6 @@
 import datetime
 
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
 
 from variables.models import Variable
 
@@ -66,7 +65,7 @@ def get_serializer_field_for_variable(variable, write_only=False, read_only=Fals
         )
 
 
-class OpenFiscaAPI_BaseSerializer(ModelSerializer):
+class OpenFiscaAPI_BaseSerializer(serializers.Serializer):
     """This is a sublass of ModelSerializer. The intent is to automatically create
     a serializer with Fields for each input/output related to the Parent variable
     """
