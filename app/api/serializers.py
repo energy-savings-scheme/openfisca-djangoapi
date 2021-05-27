@@ -72,8 +72,12 @@ class OpenFiscaAPI_BaseSerializer(ModelSerializer):
     """
 
     def __init__(self, *args, **kwargs):
-        self.variable = kwargs.get("variable")
-        super().__init__()
+        self.variable = kwargs.pop("variable", None)
+        if not self.variable:
+            raise AttributeError(
+                "The attribute `variable` must be specified when instantiating this serializer!"
+            )
+        super().__init__(*args, **kwargs)
 
     def get_dependencies(self):
         # Return list of `Variable` objects which are `input_offspring` of `self.variable`
@@ -88,8 +92,6 @@ class OpenFiscaAPI_BaseSerializer(ModelSerializer):
         There should be one field for each `input_offspring` of the Variable.
         """
 
-        # NOTE - this is currently incomplete! It currently always just returns a "ChoiceField".
-        # What we want is to return the correct Field type based on the `Variable.value_type`
         fields = {
             dependency.name: get_serializer_field_for_variable(
                 dependency, write_only=True

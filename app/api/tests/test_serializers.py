@@ -12,6 +12,12 @@ class TestOpenFiscaAPI_BaseSerializer(TestCase):
             name="test_variable", metadata={"input_offspring": ["child_variable"]}
         )
 
+    def test_instantiating_serializer_without_specifying_variable_raises_AttributeError(
+        self,
+    ):
+        with self.assertRaises(AttributeError):
+            invalid = OpenFiscaAPI_BaseSerializer()
+
     def test_get_dependencies_method(self):
         serializer = OpenFiscaAPI_BaseSerializer(variable=self.variable)
         dependencies = serializer.get_dependencies()
