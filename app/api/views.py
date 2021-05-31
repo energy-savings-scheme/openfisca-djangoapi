@@ -53,7 +53,11 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print(serializer.data)
+
         self.perform_create(serializer)
+        print("AFTER CALLING PERFORM")
+        print(serializer.data)
         headers = self.get_success_headers(serializer.data)
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
@@ -72,24 +76,54 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
         # ii) Make POST request to `https://{openfisca_api_url}/calculate/`
 
         print(serializer.validated_data)
+        payload = {
+            "buildings":
+            {
+                "building_1":
+                {
+                    "AC_has_5_years_warranty": {"2021-05-31": True},
+                    "Air_Conditioner__cooling_capacity": {"2021-05-31": 3.5},
+                    'Air_Conditioner_type': {'2021-05-31': "type_6"},
+                    'Appliance__installation_purpose': {'2021-05-31': "residential"},
+                    'Appliance__installation_type': {'2021-05-31': "replacement"},
+                    'Appliance__zone_type': {'2021-05-31': "average"},
+                    'Appliance_demand_response_capability': {'2021-05-31': True},
+                    'Appliance_is_installed': {'2021-05-31': True},
+                    'Appliance_is_registered_in_GEMS': {'2021-05-31': True},
+                    'Appliance_is_removed': {'2021-05-31': True},
+                    'Appliance_located_in_residential_building': {'2021-05-31': False},
+                    'No_Existing_AC': {'2021-05-31': False},
+                    'PDRS_AC_power_input': {'2021-05-31': 0.765},
+                    'PDRS_HEAB_AC_replace_peak_demand_savings': {'2021-05-31': None},
+                    'implementation_is_performed_by_qualified_person': {'2021-05-31': True}
+                },
+            },
+            'persons': {
+                'person1': {}
+            }
+        }
+
+        print(payload)
 
         try:
             resp = requests.post(
-                f"{settings.OPENFISCA_API_URL}/calculate/", json={"key": "value"}
+                f"{settings.OPENFISCA_API_URL}/calculate/", json=payload
             )
         except Exception as e:
             raise APIException(
                 {
-                    "error": "An occurred occured while making the request to the OpenFisca API!",
+                    "error": "An error occurred while making the request to the OpenFisca API!",
                     "message": str(e),
                 }
             )
+
+        print(resp.status_code)
 
         # Handle OpenFisca `400: Bad Request` error
         if resp.status_code == 400:
             raise ValidationError(
                 {
-                    "error": "An occurred occured during the OpenFisca calculation!",
+                    "error": " (400) An error occurred during the OpenFisca calculation!",
                     "message": json.loads(resp.text),
                 }
             )
@@ -98,7 +132,7 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
         if resp.status_code == 500:
             raise APIException(
                 {
-                    "error": "An occurred occured during the OpenFisca calculation!",
+                    "error": "(500) An error occurred during the OpenFisca calculation!",
                     "message": json.loads(resp.text),
                 }
             )
@@ -107,10 +141,13 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
         if resp.status_code not in [200, 201]:
             raise APIException(
                 {
-                    "error": "An occurred occured during the OpenFisca calculation!",
+                    "error": "(not in 200, 201) An error occurred during the OpenFisca calculation!",
                     "message": json.loads(resp.text),
                 }
             )
 
         # Finally - handle success!
-        return resp.data
+        if resp.status_code in [200, 201]:
+            print(resp.text)
+
+        return resp.text
