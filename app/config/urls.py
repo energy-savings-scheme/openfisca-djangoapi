@@ -29,19 +29,34 @@ from drf_spectacular.views import (
 admin.site.site_header = "OpenFisca Django-API Administration"
 
 urlpatterns = [
+    path("api/", include(("api.urls", "api"), namespace="api")),
     path("entities/", include(("entities.urls", "entities"), namespace="entities")),
     path("variables/", include(("variables.urls", "variables"), namespace="variables")),
     url(r"^admin/", admin.site.urls),
+    path("plots/", include(("plots.urls", "plots"), namespace="plots")),
+    path(
+        "activities/",
+        include(("activities.urls", "activities"), namespace="activities"),
+    ),
     # SWAGGER PATHS
     path(
         "",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("plots/", include(("plots.urls", "plots"), namespace="plots")),
-    path("activities/", include(("activities.urls",
-                                 "activities"), namespace="activities"))
+    path(
+        "schema/",
+        SpectacularAPIView.as_view(),
+        name="schema",
+    ),
+    path(
+        "api/",
+        SpectacularSwaggerView.as_view(url_name="api-schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/", SpectacularAPIView.as_view(urlconf="api.urls"), name="api-schema"
+    ),
 ]
 
 # Host the static from uWSGI
