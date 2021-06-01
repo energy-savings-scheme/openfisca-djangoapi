@@ -54,12 +54,10 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        self.perform_create(serializer)
-        print("AFTER CALLING PERFORM")
-        print(serializer.data)
+        response = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            response, status=status.HTTP_201_CREATED, headers=headers
         )
 
     def perform_create(self, serializer):
@@ -68,11 +66,6 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
 
         NOTE - you can access the validated data using `serializer.validated_data`
         """
-
-        # TODO - implement OpenFisca API call here. Steps:
-        #  i) Construct the payload for the OpenFisca `POST /calculate/` request.
-        #     - this needs to be in the correct format with all the correct entities and names etc. (see https://openfisca.org/doc/openfisca-web-api/input-output-data.html)
-        # ii) Make POST request to `https://{openfisca_api_url}/calculate/`
 
         userInput = serializer.validated_data
 
@@ -91,33 +84,6 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
             }
         }
 
-        # payload = {
-        #     "buildings":
-        #     {
-        #         "building_1":
-        #         {
-        #             "AC_has_5_years_warranty": {"2021-05-31": True},
-        #             "Air_Conditioner__cooling_capacity": {"2021-05-31": 3.5},
-        #             'Air_Conditioner_type': {'2021-05-31': "type_6"},
-        #             'Appliance__installation_purpose': {'2021-05-31': "residential"},
-        #             'Appliance__installation_type': {'2021-05-31': "replacement"},
-        #             'Appliance__zone_type': {'2021-05-31': "average"},
-        #             'Appliance_demand_response_capability': {'2021-05-31': True},
-        #             'Appliance_is_installed': {'2021-05-31': True},
-        #             'Appliance_is_registered_in_GEMS': {'2021-05-31': True},
-        #             'Appliance_is_removed': {'2021-05-31': True},
-        #             'Appliance_located_in_residential_building': {'2021-05-31': False},
-        #             'No_Existing_AC': {'2021-05-31': False},
-        #             'PDRS_AC_power_input': {'2021-05-31': 0.765},
-        #             'PDRS_HEAB_AC_replace_peak_demand_savings': {'2021-05-31': None},
-        #             'implementation_is_performed_by_qualified_person': {'2021-05-31': True}
-        #         },
-        #     },
-        #     'persons': {
-        #         'person1': {}
-        #     }
-        # }
-
         try:
             resp = requests.post(
                 f"{settings.OPENFISCA_API_URL}/calculate/", json=payload_base
@@ -129,8 +95,6 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
                     "message": str(e),
                 }
             )
-
-        print(resp.status_code)
 
         # Handle OpenFisca `400: Bad Request` error
         if resp.status_code == 400:
@@ -161,7 +125,5 @@ class OpenFiscaAPI_BaseView(CreateAPIView):
 
         # Finally - handle success!
         if resp.status_code in [200, 201]:
-            # print(resp.text['buildings']['building1'][self.variable_name])
-            print(resp.text)
-
-        return resp.text
+            response = resp.json()
+            return response['buildings']['building_1']
