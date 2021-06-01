@@ -39,7 +39,8 @@ def get_serializer_field_for_variable(variable, write_only=False, read_only=Fals
             help_text=variable.description,
         )
     elif variable.value_type == "String":
-        return serializers.CharField(
+        return serializers.ChoiceField(
+            choices=variable.possible_values,
             default=variable.default_value,
             read_only=read_only,
             write_only=write_only,
@@ -52,13 +53,13 @@ def get_serializer_field_for_variable(variable, write_only=False, read_only=Fals
             write_only=write_only,
             help_text=variable.description,
         )
-    elif variable.value_type == "Enum":
-        return serializers.CharField(
-            default="NOT IMPLEMENTED YET",
-            read_only=read_only,
-            write_only=write_only,
-            help_text=variable.description,
-        )
+    # elif variable.value_type == "Enum":
+    #     return serializers.CharField(
+    #         default="NOT IMPLEMENTED YET",
+    #         read_only=read_only,
+    #         write_only=write_only,
+    #         help_text=variable.description,
+    #     )
     else:
         raise Exception(
             f"Cannot find corresponding Serializer Field for variable: {variable.name}"
