@@ -1,0 +1,4 @@
+# ElasticBeanstalk requires the requirements.txt file in the root directory
+# so we just import `services/app/requirements.txt` from here...
+
+-r services/app/requirements.txt
