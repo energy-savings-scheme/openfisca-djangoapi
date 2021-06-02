@@ -4,5 +4,9 @@ from api.views import OpenFiscaAPI_BaseView
 from variables.models import Variable
 
 
-class Activity_NABERS(OpenFiscaAPI_BaseView):
-    variable_name = "ESS__electricity_savings"
+class ESS__D16__deemed_elec_savings(OpenFiscaAPI_BaseView):
+    variable_name = "ESS__D16__deemed_elec_savings"
+
+
+class ESS__number_of_ESCs(OpenFiscaAPI_BaseView):
+    variable_name = "ESS__number_of_ESCs"
