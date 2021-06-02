@@ -1,9 +1,8 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from api.serializers import OpenFiscaAPI_BaseSerializer
 from api.views import OpenFiscaAPI_BaseView
-from api.pdrs.views import Activity_x1
+from api.pdrs.views import PDRS_HEAB_AC_replace_peak_demand_savings
 
 from variables.models import Variable
 
@@ -23,7 +22,7 @@ class TestOpenFiscaAPI_Base(TestCase):
             invalid = OpenFiscaAPI_BaseView(variable_name="invalid_variable")
 
 
-class Test_View_Activity_x1(TestCase):
+class Test_View_PDRS_ROOA_fridge_peak_demand_savings(TestCase):
     def setUp(self):
         offsprings = [
             "ESS__method_type",
@@ -58,6 +57,6 @@ class Test_View_Activity_x1(TestCase):
                 "period": "2021-05-27",
             },
         )
-        res = Activity_x1.as_view()(request)
+        res = PDRS_HEAB_AC_replace_peak_demand_savings.as_view()(request)
 
         assert res.status_code == 201
