@@ -172,7 +172,9 @@ STATIC_URL = "/static/"
 # Collect static won't work if you haven't configured this
 # django.core.exceptions.ImproperlyConfigured: You're using the staticfiles app without having set
 #  the STATIC_ROOT setting to a filesystem path.
-STATIC_ROOT = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+
 
 # Indicate that we're being executed by uWSGI
 # This settings is used in urls.py to serve the static from within uWSGI
