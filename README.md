@@ -7,10 +7,10 @@ A database and Django webserver layer for serving OpenFisca rulesets
 #### Serving locally
 This repo can be served in two ways:
 1) Serve with a local development environment :heavy_check_mark:
-   - Instructions in [local_deployment.md](docs/local_deployment.md) 
+   - Instructions in [local_deployment.md](docs/local_deployment.md)
 2) Serve with Docker
-   - Docker deployment is buggy and not recommended! :warning:
-   - [See instructions](#serve-with-docker) :blue_book:
+   - Not recommended (this functionality is currently broken :warning:) :warning:
+   - Instructions in [docker_deployment.md](docs/docker_deployment.md) 
 
 
 #### Deploying
