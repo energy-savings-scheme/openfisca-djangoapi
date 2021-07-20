@@ -13,7 +13,8 @@ jsonfield==3.1.0            # A reusable Django field that allows you to store v
 numpy                       # A package for array computing with Python.
 networkx==2.5               #package for creating and manipulating graphs and networks
 pandas==1.2.4               #Powerful data structures for data analysis, time series, and statistics
-psycopg2==2.8.6             # Python-PostgreSQL Database Adapter
+# psycopg2==2.8.6             # Python-PostgreSQL Database Adapter
+psycopg2-binary
 pylint==2.3.1               # python code static checker
 plotly==4.14.3              # interactive data visualization for Python
 requests==2.25.1            # Python HTTP for Humans.
