@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+  repository_dispatch: # Triggered by a `push` event on a submodule
+    types: [openfisca-ruleset-updated] # repository_dispatch must have 'type' == "submodule-updated"
 
 jobs:
   build:
