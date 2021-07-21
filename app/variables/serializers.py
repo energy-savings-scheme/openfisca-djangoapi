@@ -32,13 +32,22 @@ class VariableListSerializer(serializers.ModelSerializer):
 
     def get_default_value(self, obj):
         if obj.value_type == "Int":
-            return int(obj.default_value)
+            try:
+                return int(obj.default_value)
+            except ValueError:
+                return 0
 
         if obj.value_type == "Float":
-            return float(obj.default_value)
+            try:
+                return int(obj.default_value)
+            except ValueError:
+                return 0.0
 
         if obj.value_type == "Boolean":
-            return bool(distutils.util.strtobool(obj.default_value))
+            try:
+                return bool(distutils.util.strtobool(obj.default_value))
+            except ValueError:
+                return False
 
         return obj.default_value
 
