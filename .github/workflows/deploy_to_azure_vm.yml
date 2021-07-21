@@ -2,20 +2,28 @@ name: Deploy to Azure VM via remote ssh command
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: executing remote ssh commands using password
+      - name: Executing remote ssh commands
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
+          port: 22
+          script_stop: true
           script: |
-            whoami
-            ls -al
+            source venv/bin/activate
+            cd openfisca-djangoapi
+            git fetch --all
+            git reset --hard origin/main
+            pip install -r requirements.txt
+            python app/manage.py migrate
+            python app/manage.py fetch_all
+            sudo supervisorctl restart all
+            exit
