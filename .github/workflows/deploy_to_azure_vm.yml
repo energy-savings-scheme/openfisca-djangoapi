@@ -25,6 +25,6 @@ jobs:
             pip install -r requirements.txt
             python app/manage.py migrate
             python app/manage.py fetch_all
-            python app/manage.py collectstatic
+            python app/manage.py collectstatic --noinput
             sudo supervisorctl restart all
             exit
