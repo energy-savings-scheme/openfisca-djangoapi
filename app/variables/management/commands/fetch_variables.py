@@ -42,7 +42,6 @@ async def fetch(url, session, django_command):
         django_command.stdout.ending = ""
         django_command.stdout.write(django_command.style.SUCCESS("."))
         django_command.stdout.ending = "\n"
-
         return resp
 
 
@@ -162,11 +161,10 @@ class Command(BaseCommand):
                 obj.metadata = data.get("metadata")
                 obj.possible_values = data.get("possibleValues")
                 obj.value_type = data.get("valueType")
-
                 # experiment to get a directory tree
-                directory = data.get("source").split("#")[0].split("/")
-                directory_index = directory.index('variables')
-                obj.directory = "/".join(directory[directory_index:])
+                # directory = data.get("source").split("#")[0].split("/")
+                # directory_index = directory.index('variables')
+                # obj.directory = "/".join(directory[directory_index:])
 
                 # Link this Variable object to an Entity object according to the entity `name` attribute
                 try:
@@ -220,7 +218,7 @@ class Command(BaseCommand):
                 # `metadata.get_input_offsprings` requires every Variable to have an alias ...
                 # so we'll just add a placeholder alias if none already exists.
                 # TODO - make `metadata.get_input_offsprings` less reliant on a particular metadata structure
-                if entry.metadata.get("alias") is None:
+                if entry.metadata is not None and entry.metadata.get("alias") is None:
                     entry.metadata["alias"] = metadata.makeAlias(entry.name)
                     entry.save()
                 metadata.variableType(entry)

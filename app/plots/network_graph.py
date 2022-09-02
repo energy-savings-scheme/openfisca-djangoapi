@@ -25,7 +25,8 @@ def get_variable_graph(var_id, G):
     try:
         variable = Variable.objects.get(name=var_id)
         var_type = variable.metadata['variable-type']
-        aliasList = variable.metadata['alias'].split(" ")
+        if variable.metadata is not None and variable.metadata.get('alias') is not None:
+            aliasList = variable.metadata['alias'].split(" ")
         if (len(aliasList) >= 5):
             alias = " ".join(aliasList[0:5])
         else:
