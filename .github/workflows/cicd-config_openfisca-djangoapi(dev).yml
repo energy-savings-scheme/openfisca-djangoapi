@@ -34,6 +34,12 @@ jobs:
 
       - name: Migrate db
         run: python app/manage.py migrate
+
+      - name: Fetch
+        run: python app/manage.py fetch_all
+
+      - name: Collectstatic
+        run: python app/manage.py collectstatic --noinput
       
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v2
