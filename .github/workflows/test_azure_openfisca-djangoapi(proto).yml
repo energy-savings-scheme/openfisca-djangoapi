@@ -26,12 +26,20 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      
-      - name: Install dependencies
-        run: pip install -r requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
+      - name: Fetch variables
+        run: |
+          cd openfisca-djangoapi
+          git fetch --all
+          git reset --hard origin/main
+          pip install -r requirements.txt
+          python app/manage.py migrate
+          python app/manage.py fetch_all
+          python app/manage.py collectstatic --noinput
+          sudo supervisorctl restart all
+
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v2
         with:
