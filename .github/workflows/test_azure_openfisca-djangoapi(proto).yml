@@ -31,7 +31,6 @@ jobs:
       
       - name: Fetch variables
         run: |
-          cd openfisca-djangoapi
           git fetch --all
           git reset --hard origin/main
           pip install -r requirements.txt
