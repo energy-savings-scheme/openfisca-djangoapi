@@ -1,4 +1,24 @@
 # ElasticBeanstalk requires the requirements.txt file in the root directory
 # so we just import `services/app/requirements.txt` from here...
 
--r services/app/requirements.txt
+aiohttp==3.7.4              # Async http client/server framework (asyncio)
+black==20.8b1               # The uncompromising code formatter.
+Django==3.1.7               # A high-level Python Web framework that encourages rapid development and clean, pragmatic design.
+django-cors-headers==3.7.0  # a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS).
+django-debug-toolbar==3.2   # A configurable set of panels that display various debug information about the current request/response.
+django-environ==0.4.5       # Django-environ allows you to utilize 12factor inspired environment variables to configure your Django application.
+django-filter==2.4.0        # Django-filter is a reusable Django application for allowing users to filter querysets dynamically.
+djangorestframework==3.12.2 # Web APIs for Django, made easy
+djangorestframework-recursive==0.1.2    # Recursive Serialization for Django REST framework
+drf-spectacular==0.13.2     # Sane and flexible OpenAPI 3 schema generation for Django REST framework
+Jinja2==2.10.1              # A small but fast and easy to use stand-alone template engine written in pure python.
+jsonfield==3.1.0            # A reusable Django field that allows you to store validated JSON in your model
+numpy                       # A package for array computing with Python.
+networkx==2.5               #package for creating and manipulating graphs and networks
+pandas==1.2.4               #Powerful data structures for data analysis, time series, and statistics
+# psycopg2==2.8.6             # Python-PostgreSQL Database Adapter
+psycopg2-binary
+pylint==2.3.1               # python code static checker
+plotly==4.14.3              # interactive data visualization for Python
+requests==2.25.1            # Python HTTP for Humans.
+uwsgi==2.0.18               # The uWSGI Server
