@@ -43,7 +43,7 @@ jobs:
         with:
           name: python-app
           path: |
-            . 
+            ./app
             !venv/
 
   deploy:
