@@ -1,0 +1,33 @@
+name: Deploy to Azure VM via remote ssh command
+on:
+  workflow_dispatch:
+  push:
+    branches: [staging]
+  repository_dispatch: # Triggered by a `push` event on a submodule
+    types: [uat-openfisca-ruleset-updated] # repository_dispatch must have 'type' == "submodule-updated"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executing remote ssh commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.UAT_VM_HOST }}
+          username: ${{ secrets.UAT_VM_USER }}
+          key: ${{ secrets.UAT_VM_PRIVATE_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            source venv/bin/activate
+            cd openfisca-djangoapi
+            git fetch --all
+            git reset --hard origin/main
+            pip install -r requirements.txt
+            rm app/db.sqlite3
+            python app/manage.py migrate
+            python app/manage.py fetch_all
+            python app/manage.py collectstatic --noinput
+            sudo supervisorctl restart all
+            exit
