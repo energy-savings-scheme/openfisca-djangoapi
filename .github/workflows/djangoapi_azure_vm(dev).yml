@@ -23,7 +23,7 @@ jobs:
             source venv/bin/activate
             cd openfisca-djangoapi
             git fetch --all
-            git reset --hard origin/main
+            git reset --hard origin/develop
             pip install -r requirements.txt
             rm app/db.sqlite3
             python app/manage.py migrate
