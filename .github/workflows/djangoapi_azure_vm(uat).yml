@@ -1,4 +1,4 @@
-name: Deploy to Azure VM via remote ssh command
+name: Deploy to UAT
 on:
   workflow_dispatch:
   push:
