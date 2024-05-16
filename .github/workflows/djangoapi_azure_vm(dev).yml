@@ -1,10 +1,10 @@
-name: Deploy to UAT
+name: Deploy to DEV
 on:
   workflow_dispatch:
   push:
-    branches: [staging]
+    branches: [develop]
   repository_dispatch: # Triggered by a `push` event on a submodule
-    types: [uat-openfisca-ruleset-updated] # repository_dispatch must have 'type' == "submodule-updated"
+    types: [openfisca-ruleset-updated] # repository_dispatch must have 'type' == "submodule-updated"
 
 jobs:
   build:
@@ -14,16 +14,16 @@ jobs:
       - name: Executing remote ssh commands
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.UAT_VM_HOST }}
-          username: ${{ secrets.UAT_VM_USER }}
-          key: ${{ secrets.UAT_VM_PRIVATE_KEY }}
+          host: ${{ secrets.DEV_VM_HOST }}
+          username: ${{ secrets.DEV_VM_USER }}
+          key: ${{ secrets.DEV_VM_PRIVATE_KEY }}
           port: 22
           script_stop: true
           script: |
             source venv/bin/activate
             cd openfisca-djangoapi
             git fetch --all
-            git reset --hard origin/staging
+            git reset --hard origin/develop
             pip install -r requirements.txt
             rm app/db.sqlite3
             python3 app/manage.py migrate
