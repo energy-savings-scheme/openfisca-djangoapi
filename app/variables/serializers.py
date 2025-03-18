@@ -53,11 +53,46 @@ class VariableListSerializer(serializers.ModelSerializer):
 
 
 class VariableChildrenSerializer(serializers.ModelSerializer):
-    children = RecursiveField(many=True)
-
+    children = serializers.StringRelatedField(many=True)
+    entity = serializers.StringRelatedField()
+    parents = serializers.StringRelatedField(many=True)
+    default_value = serializers.SerializerMethodField()
+    input_offsprings = VariableListSerializer(source='input_offspring', many=True)
     class Meta:
         model = Variable
         fields = [
             "name",
+            "description",
+            "directory",
+            "value_type",
+            "entity",
+            "definition_period",
+            "default_value",
+            "possible_values",
+            "metadata",
+            "formula",
             "children",
+            "parents",
+            "input_offsprings"
         ]
+    
+    def get_default_value(self, obj):
+        if obj.value_type == "Int":
+            try:
+                return int(obj.default_value)
+            except ValueError:
+                return 0
+
+        if obj.value_type == "Float":
+            try:
+                return int(obj.default_value)
+            except ValueError:
+                return 0.0
+
+        if obj.value_type == "Boolean":
+            try:
+                return bool(distutils.util.strtobool(obj.default_value))
+            except ValueError:
+                return False
+
+        return obj.default_value
