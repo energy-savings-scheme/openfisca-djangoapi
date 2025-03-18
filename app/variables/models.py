@@ -83,3 +83,8 @@ class Variable(models.Model):
 
     def __repr__(self):
         return f"<Variable: {str(self)}>"
+
+    def input_offspring(self):
+        input_offspring = self.metadata.get('input_offspring')
+        return Variable.objects.filter(name__in=input_offspring)
+
