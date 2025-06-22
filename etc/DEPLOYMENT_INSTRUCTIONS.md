@@ -28,7 +28,7 @@ We want to direct http requests to our Django service
 We want to configure it to start the Gunicorn process when the virtual machine boots up.
 
 1. run `sudo apt-get install supervisor`
-2. copy the contents of the file `etc/supervisor/conf.d/safeguard_supervisor_config.conf` to the location `etc/supervisor/conf.d/safeguard_supervisor_config.conf` on the virtual machine
+2. copy the contents of the file `etc/supervisor/conf.d/safeguard_supervisor_config.conf` to the location `/etc/supervisor/conf.d/safeguard_supervisor_config.conf` on the virtual machine
    - Pay attention to the `directory` and `command` in this config file. They should point to the directory which contains the virtual environment and the Django application bundle.
 3. run `sudo supervisorctl reread`
 4. run `sudo supervisorctl rerestart`
