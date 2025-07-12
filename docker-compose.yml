@@ -25,8 +25,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app-django-ess.rule=Host(`app-django-ess.local.ro2.dev`)"
-      - "traefik.http.routers.app-django-ess.entrypoints=https"
-      - "traefik.http.routers.app-django-ess.tls=true"
+      - "traefik.http.routers.app-django-ess.entrypoints=http"
       - "traefik.http.services.app-django-ess.loadbalancer.server.port=8000"
     networks:
       - "default"
