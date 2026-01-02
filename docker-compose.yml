@@ -5,6 +5,7 @@ services:
       dockerfile: ./services/app/Dockerfile
       platforms:
         - 'linux/amd64'
+    container_name: app
     # command: dev
     # command: uwsgi
     volumes:
@@ -15,6 +16,7 @@ services:
     build:
       context: ./
       dockerfile: ./services/nginx/Dockerfile
+    container_name: web
     ports:
       - '8081:80'
     depends_on:

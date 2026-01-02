@@ -24,10 +24,8 @@ jobs:
             cd openfisca-djangoapi
             git fetch --all
             git reset --hard origin/develop
-            pip install -r requirements.txt
-            rm app/db.sqlite3
-            python3 app/manage.py migrate
-            python3 app/manage.py fetch_all
-            python3 app/manage.py collectstatic --noinput
-            sudo supervisorctl restart all
+            docker compose up --build -d
+            docker compose exec app bash entrypoint.sh setup_db
+            docker compose exec app bash entrypoint.sh fetch_data
+            docker compose exec app bash entrypoint.sh manage collectstatic --noinput
             exit
