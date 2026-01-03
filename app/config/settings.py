@@ -31,7 +31,7 @@ if READ_DOT_ENV_FILE:
 SECRET_KEY = "jop1!g_+tqprunn=)bdx#qlmtjk6&b6!c&kz(d8d#^7&z38)d="
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", True))
+DEBUG = bool(os.environ.get("DEBUG", False))
 
 ALLOWED_HOSTS = ["0.0.0.0", "localhost", "*"]
 
