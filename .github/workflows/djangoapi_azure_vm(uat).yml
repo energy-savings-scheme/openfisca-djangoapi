@@ -20,7 +20,6 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            source venv/bin/activate
             cd openfisca-djangoapi
             git fetch --all
             git reset --hard origin/staging
