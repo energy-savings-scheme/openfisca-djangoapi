@@ -15,7 +15,7 @@ Including another URLconf
 """
 from __future__ import print_function
 from django.conf import settings
-from django.conf.urls import url
+# from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
@@ -33,7 +33,7 @@ urlpatterns = [
     path("api/", include(("api.urls", "api"), namespace="api")),
     path("entities/", include(("entities.urls", "entities"), namespace="entities")),
     path("variables/", include(("variables.urls", "variables"), namespace="variables")),
-    url(r"^admin/", admin.site.urls),
+    # url(r"^admin/", admin.site.urls),
     path("plots/", include(("plots.urls", "plots"), namespace="plots")),
     path(
         "activities/",

@@ -3,6 +3,8 @@ from django.db.models import Count, Q
 from rest_framework import generics, filters
 # from rest_framework.response import Response
 # from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 from config.pagination import LargeResultsSetPagination
@@ -113,9 +115,13 @@ class VariableDetail(generics.RetrieveAPIView):
     """
 
     queryset = Variable.objects.all()
-    serializer_class = VariableListSerializer
+    serializer_class = VariableChildrenSerializer
     lookup_field = "name"
     lookup_url_kwarg = "variable_name"
+
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 class VariableChildrenList(generics.RetrieveAPIView):
