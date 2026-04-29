@@ -23,8 +23,9 @@ jobs:
             cd openfisca-djangoapi
             git fetch --all
             git reset --hard origin/develop
+            git pull origin develop
             docker compose up --build -d
-            docker compose exec app bash entrypoint.sh setup_db
-            docker compose exec app bash entrypoint.sh fetch_data
-            docker compose exec app bash entrypoint.sh manage collectstatic --noinput
+            docker compose run app setup_db
+            docker compose run app fetch_data
+            docker compose run app manage collectstatic --noinput
             exit

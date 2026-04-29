@@ -5,21 +5,28 @@ services:
       dockerfile: ./services/app/Dockerfile
       platforms:
         - 'linux/amd64'
-    container_name: app
+    container_name: openfisca-django-app
     # command: dev
     # command: uwsgi
     volumes:
       - ./app:/usr/src/app
     env_file: .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   web:
     build:
       context: ./
       dockerfile: ./services/nginx/Dockerfile
-    container_name: web
+    container_name: openfisca-django-web
     ports:
-      - '8080:80'
+      - '18081:80'
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     restart: unless-stopped

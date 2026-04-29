@@ -1,3 +1,6 @@
+# DEPRECATED
+Use docker development instead. Instructions in [docker_deployment.md](./docker_deployment.md)
+
 ## Install and run locally (developers) :house_with_garden:
 
 These instructions will help you:

@@ -21,7 +21,7 @@ EXPOSE 8000 8001
 # eg: PostgreSQL client, git, gettext
 RUN apk add --no-cache --virtual .build-deps \
     ca-certificates gcc g++ bash linux-headers musl-dev \
-    curl-dev openssl-dev git \
+    curl-dev openssl-dev git curl \
     postgresql-dev postgresql-client gettext
 
 # Copy deployment files

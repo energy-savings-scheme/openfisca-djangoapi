@@ -1,3 +1,5 @@
+# Openfisca DjangoAPI
+
 ## Install and run locally with Docker :house_with_garden:
 
 These instructions will help you:
@@ -11,60 +13,60 @@ These instructions will help you:
 
 ---
 
-#### Clone this repo :alien:
+## Prerequisite
+
+Install docker and docker-compose on your machine (if you don't already have it installed):
+- Docker - [Installation Guide](https://docs.docker.com/engine/install/)
+- Docker Compose - [Installation Guide](https://docs.docker.com/compose/install/)
+
+## How to Run
+
+### Clone this repo :alien:
 
 ```
 $ git clone git@github.com:RamParameswaran/openfisca-djangoapi.git
 $ cd openfisca-djangoapi
 ```
 
-#### Install docker and docker-compose
-
-Install docker and docker-compose on your machine (if you don't already have it installed):
-- docker: https://docs.docker.com/get-docker/
-- docker-compose: https://docs.docker.com/compose/install/
-
-
-#### Build the Docker image
-
-Check config parameters:
+### Prepare Configuration
+- Create new .env file
+- Copy all environment variables definition from .env.example to .env
+- Fill the environment variables with appropriate values.
 ```
 # Some config params are seting in the `docker-compose.yml` file
 # The most relevant are the `app->environment` variables such as "OPENFISCA_API_URL" and "PORT"
 # Change these as necessary.
-
 ```
-Init project:
+
+### Build Application
 
 ```
 $ cd openfisca-djangoapi
 $ docker-compose build
 ```
 
-#### Setup the Django database using Docker
+### Run the Application
 
-Setup database:
+```sh
+docker-compose up -d
+```
+
+_Now your django app is available on http://localhost:18081
+
+### Setup Database
 
 ```
 $ docker-compose run app setup_db
 $ docker-compose run app fetch_data
 ```
 
+## Deployment
+For deployment, it all happening through CI/CD in Github workflow.
+All workflows defined in *.github/workflows/*.
 
-#### Serve the Django application using Docker
+## Additional Functionality
 
-Launch:
-
-```
-$ docker-compose up app
-```
-
-_Now your django app is available on http://localhost:8000_
-
-
-### ADDITIONAL FUNCTIONALITY
-
-#### Docker Container commands
+### Docker Container commands
 
 You can run Django and bash command in the Docker container:
 
@@ -92,4 +94,3 @@ Available commands:
 ```
 $ docker-compose run app manage createsuperuser
 ```
-
