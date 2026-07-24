@@ -20,7 +20,7 @@ jobs:
         run: |
           az vm run-command invoke -g ${{ secrets.AZURE_RESOURCE_GROUP_DEV }} -n ${{ secrets.AZURE_VM_NAME_DEV }} \
           --command-id RunShellScript \
-          -- scripts '
+          --scripts '
             set -e
             git config --global --add safe.directory /home/openfiscaAdmin/openfisca_nsw_safeguard
             cd /home/djangoApiAdmin/openfisca-djangoapi
