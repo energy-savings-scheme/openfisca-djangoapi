@@ -16,7 +16,7 @@ jobs:
         with:
           creds: ${{ secrets.SAFEGUARD_ESTIMATOR_INTEGRATIONS_AZURE_CREDS }}
 
-      - name: Execute build django dev
+      - name: Build Django
         run: |
           az vm run-command invoke -g ${{ secrets.AZURE_RESOURCE_GROUP_DEV }} -n ${{ secrets.AZURE_VM_NAME_DEV }} \
           --command-id RunShellScript \
