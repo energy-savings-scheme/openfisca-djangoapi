@@ -24,7 +24,7 @@ jobs:
             set -e
             export HOME=/home/djangoApiAdmin
             cd /home/djangoApiAdmin/openfisca-djangoapi
-            git config --global --add safe.directory /home/openfiscaAdmin/openfisca_nsw_safeguard
+            git config --global --add safe.directory /home/djangoApiAdmin/openfisca-djangoapi
             git fetch --all
             git reset --hard origin/develop
             docker compose up --build -d
