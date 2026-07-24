@@ -26,16 +26,8 @@ jobs:
             cd /home/djangoApiAdmin/openfisca-djangoapi
             git fetch --all
             git reset --hard origin/develop
-            docker compose up -d
+            docker compose up --build -d
+            docker compose exec app bash entrypoint.sh setup_db
+            docker compose exec app bash entrypoint.sh fetch_data
             docker compose exec app bash entrypoint.sh manage collectstatic --noinput
           '
-          # --scripts '
-          #   set -e
-          #   cd /home/djangoApiAdmin/openfisca-djangoapi
-          #   git fetch --all
-          #   git reset --hard origin/develop
-          #   docker compose up --build -d
-          #   docker compose exec app bash entrypoint.sh setup_db
-          #   docker compose exec app bash entrypoint.sh fetch_data
-          #   docker compose exec app bash entrypoint.sh manage collectstatic --noinput
-          # '
