@@ -22,6 +22,7 @@ jobs:
           --command-id RunShellScript \
           --scripts '
             set -e
+            export HOME=/home/djangoApiAdmin
             git config --global --add safe.directory /home/openfiscaAdmin/openfisca_nsw_safeguard
             cd /home/djangoApiAdmin/openfisca-djangoapi
             git fetch --all
