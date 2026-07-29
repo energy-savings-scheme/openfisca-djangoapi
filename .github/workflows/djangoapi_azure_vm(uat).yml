@@ -11,20 +11,24 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Executing remote ssh commands
-        uses: appleboy/ssh-action@master
+      - name: Azure login
+        uses: azure/login@v3
         with:
-          host: ${{ secrets.UAT_VM_HOST }}
-          username: ${{ secrets.UAT_VM_USER }}
-          key: ${{ secrets.UAT_VM_PRIVATE_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            cd openfisca-djangoapi
+          creds: ${{ secrets.SAFEGUARD_ESTIMATOR_INTEGRATIONS_AZURE_CREDS }}
+
+      - name: Build Django
+        run: |
+          az vm run-command invoke -g ${{ secrets.AZURE_RESOURCE_GROUP_UAT }} -n ${{ secrets.AZURE_VM_NAME_UAT }} \
+          --command-id RunShellScript \
+          --scripts '
+            set -e
+            export HOME=/home/djangoApiAdmin
+            cd $HOME/openfisca-djangoapi
+            git config --global --add safe.directory $HOME/openfisca-djangoapi
             git fetch --all
             git reset --hard origin/staging
             docker compose up --build -d
             docker compose exec app bash entrypoint.sh setup_db
             docker compose exec app bash entrypoint.sh fetch_data
             docker compose exec app bash entrypoint.sh manage collectstatic --noinput
-            exit
+          '

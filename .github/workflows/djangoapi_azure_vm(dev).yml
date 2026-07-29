@@ -4,27 +4,31 @@ on:
   push:
     branches: [develop]
   repository_dispatch: # Triggered by a `push` event on a submodule
-    types: [openfisca-ruleset-updated] # repository_dispatch must have 'type' == "submodule-updated"
+    types: [dev-openfisca-ruleset-updated] # repository_dispatch must have 'type' == "submodule-updated"
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Executing remote ssh commands
-        uses: appleboy/ssh-action@master
+      - name: Azure login
+        uses: azure/login@v3
         with:
-          host: ${{ secrets.DEV_VM_HOST }}
-          username: ${{ secrets.DEV_VM_USER }}
-          key: ${{ secrets.DEV_VM_PRIVATE_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            cd openfisca-djangoapi
+          creds: ${{ secrets.SAFEGUARD_ESTIMATOR_INTEGRATIONS_AZURE_CREDS }}
+
+      - name: Build Django
+        run: |
+          az vm run-command invoke -g ${{ secrets.AZURE_RESOURCE_GROUP_DEV }} -n ${{ secrets.AZURE_VM_NAME_DEV }} \
+          --command-id RunShellScript \
+          --scripts '
+            set -e
+            export HOME=/home/djangoApiAdmin
+            cd $HOME/openfisca-djangoapi
+            git config --global --add safe.directory $HOME/openfisca-djangoapi
             git fetch --all
             git reset --hard origin/develop
             docker compose up --build -d
             docker compose exec app bash entrypoint.sh setup_db
             docker compose exec app bash entrypoint.sh fetch_data
             docker compose exec app bash entrypoint.sh manage collectstatic --noinput
-            exit
+          '
