@@ -2,7 +2,7 @@
 # Sample docker Nginx image
 # More info: https://hub.docker.com/_/nginx/
 #
-FROM nginx:1.30.6-alpine
+FROM nginx:1.31.9-alpine
 
 # Expose Nginx HTTP service
 EXPOSE 80 443
